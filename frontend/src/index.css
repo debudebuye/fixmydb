@@ -1,0 +1,163 @@
+@import 'tailwindcss';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  background: #0a0a0f;
+  color: #e2e8f0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #111118; }
+::-webkit-scrollbar-thumb { background: #2d2d3a; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #3d3d4e; }
+
+/* ── Tokens ── */
+:root {
+  --surface-0: #0a0a0f;
+  --surface-1: #111118;
+  --surface-2: #16161f;
+  --surface-3: #1d1d28;
+  --border: #252533;
+  --border-bright: #32324a;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #4a5568;
+  --accent: #7c6af7;
+  --accent-dim: #4c3bb8;
+  --accent-glow: rgba(124, 106, 247, 0.15);
+  --green: #10b981;
+  --red: #f43f5e;
+  --yellow: #f59e0b;
+  --cyan: #06b6d4;
+}
+
+/* ── Dot grid bg ── */
+.dot-grid {
+  background-image: radial-gradient(circle, #2a2a3e 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ── Code font ── */
+code, pre, .mono {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace;
+}
+
+/* ── Subtle gradient text ── */
+.text-gradient {
+  background: linear-gradient(135deg, #a78bfa, #7c6af7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-green {
+  background: linear-gradient(135deg, #10b981, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Glass card ── */
+.card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.card-elevated {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+/* ── Glow button ── */
+.btn-primary {
+  background: linear-gradient(135deg, #7c6af7, #6356d4);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  transition: all 0.2s;
+  border: 1px solid rgba(124,106,247,0.4);
+  box-shadow: 0 0 0 0 rgba(124,106,247,0.0);
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, #8b7af8, #7c6af7);
+  box-shadow: 0 0 20px rgba(124,106,247,0.3);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  transition: all 0.2s;
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover {
+  background: var(--surface-3);
+  color: var(--text-primary);
+  border-color: var(--border-bright);
+}
+
+/* ── Badge ── */
+.badge { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.02em; }
+.badge-red    { background: rgba(244,63,94,0.12); color: #fb7185; border: 1px solid rgba(244,63,94,0.25); }
+.badge-yellow { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.25); }
+.badge-blue   { background: rgba(59,130,246,0.12); color: #60a5fa; border: 1px solid rgba(59,130,246,0.25); }
+.badge-green  { background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.25); }
+.badge-purple { background: rgba(124,106,247,0.12); color: #a78bfa; border: 1px solid rgba(124,106,247,0.25); }
+.badge-gray   { background: rgba(100,116,139,0.15); color: #94a3b8; border: 1px solid rgba(100,116,139,0.2); }
+
+/* ── Tab line ── */
+.tab-active-line {
+  position: relative;
+}
+.tab-active-line::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0; right: 0;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px 2px 0 0;
+}
+
+/* ── Skeleton shimmer ── */
+@keyframes skeleton {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 50%, var(--surface-2) 75%);
+  background-size: 800px 100%;
+  animation: skeleton 1.5s infinite;
+  border-radius: 6px;
+}
+
+/* ── Score ring ── */
+@keyframes ring-in {
+  from { stroke-dashoffset: 360; }
+}
+.ring-animate { animation: ring-in 1s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+
+/* ── Monaco override ── */
+.monaco-editor,
+.monaco-editor .margin,
+.monaco-editor-background,
+.monaco-editor .inputarea.ime-input {
+  background-color: #111118 !important;
+}
