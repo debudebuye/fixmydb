@@ -188,4 +188,4 @@ Inspired by ESLint for code and Postman for APIs - but for database architecture
 
 ---
 
-**Built with ❤️ by the open source community**
+**Built for the open source community**
