@@ -1,6 +1,6 @@
 # FixMyDB V1 - Open Source AI Database Schema Reviewer
 
-![FixMyDB Logo](./frontend/public/logo.svg)
+FixMyDB V1
 
 ## Overview
 
