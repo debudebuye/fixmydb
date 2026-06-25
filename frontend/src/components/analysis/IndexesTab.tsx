@@ -15,7 +15,7 @@ export default function IndexesTab({ recommendations }: { recommendations: Recom
   };
 
   if (!recommendations.length) return (
-    <div style={{ textAlign: 'center', padding: '60px 0', color: '#3d3d55' }}>
+    <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>
       <Zap size={28} color="#f59e0b" style={{ margin: '0 auto 10px', opacity: 0.5 }} />
       <p style={{ fontSize: 14, color: '#f59e0b' }}>No index recommendations</p>
       <p style={{ fontSize: 12, marginTop: 4 }}>Your schema has good index coverage</p>
@@ -36,9 +36,9 @@ export default function IndexesTab({ recommendations }: { recommendations: Recom
         <button onClick={copyAll} style={{
           display: 'flex', alignItems: 'center', gap: 6,
           padding: '5px 12px', fontSize: 12, fontWeight: 500,
-          background: copied === -1 ? 'rgba(16,185,129,0.1)' : '#16161f',
-          border: `1px solid ${copied === -1 ? 'rgba(16,185,129,0.3)' : '#1e1e2a'}`,
-          color: copied === -1 ? '#34d399' : '#64748b',
+          background: copied === -1 ? 'rgba(16,185,129,0.1)' : 'var(--surface-2)',
+          border: `1px solid ${copied === -1 ? 'rgba(16,185,129,0.3)' : 'var(--border)'}`,
+          color: copied === -1 ? '#34d399' : 'var(--text-muted)',
           borderRadius: 7, cursor: 'pointer',
         }}>
           {copied === -1 ? <Check size={12} /> : <Copy size={12} />}
@@ -49,7 +49,7 @@ export default function IndexesTab({ recommendations }: { recommendations: Recom
       {/* Cards */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {recommendations.map((rec, i) => (
-          <div key={i} style={{ background: '#16161f', border: '1px solid #1e1e2a', borderRadius: 9, padding: '14px 16px' }}>
+          <div key={i} style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 9, padding: '14px 16px' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', gap: 7, alignItems: 'center', marginBottom: 6, flexWrap: 'wrap' }}>
@@ -57,16 +57,16 @@ export default function IndexesTab({ recommendations }: { recommendations: Recom
                     {rec.type === 'missing_index' ? 'INDEX' : 'UNIQUE'}
                   </span>
                   <code style={{ fontSize: 11, color: '#7c6af7', fontFamily: 'monospace' }}>{rec.table}</code>
-                  <span style={{ fontSize: 11, color: '#3d3d55' }}>·</span>
-                  <code style={{ fontSize: 11, color: '#64748b', fontFamily: 'monospace' }}>{rec.column}</code>
+                  <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>·</span>
+                  <code style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'monospace' }}>{rec.column}</code>
                 </div>
-                <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 8 }}>{rec.message}</p>
+                <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 8 }}>{rec.message}</p>
                 {/* SQL code block */}
-                <div style={{ background: '#0d0d14', border: '1px solid #1a1a24', borderRadius: 6, padding: '8px 12px', fontFamily: 'monospace', fontSize: 12 }}>
+                <div style={{ background: 'var(--surface-1-alt)', border: '1px solid var(--border-subtle)', borderRadius: 6, padding: '8px 12px', fontFamily: 'monospace', fontSize: 12 }}>
                   <code style={{ color: '#34d399' }}>{rec.sql}</code>
                 </div>
                 {rec.benefit && (
-                  <p style={{ fontSize: 11, color: '#3d3d55', marginTop: 6 }}>
+                  <p style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 6 }}>
                     <span style={{ color: '#f59e0b' }}>benefit: </span>{rec.benefit}
                   </p>
                 )}
@@ -74,11 +74,11 @@ export default function IndexesTab({ recommendations }: { recommendations: Recom
               <button onClick={() => copy(rec.sql, i)} style={{
                 width: 30, height: 30, borderRadius: 7, flexShrink: 0,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: copied === i ? 'rgba(16,185,129,0.1)' : '#111118',
-                border: `1px solid ${copied === i ? 'rgba(16,185,129,0.25)' : '#1a1a24'}`,
+                background: copied === i ? 'rgba(16,185,129,0.1)' : 'var(--surface-1)',
+                border: `1px solid ${copied === i ? 'rgba(16,185,129,0.25)' : 'var(--border-subtle)'}`,
                 cursor: 'pointer', transition: 'all 0.15s',
               }}>
-                {copied === i ? <Check size={12} color="#34d399" /> : <Copy size={12} color="#3d3d55" />}
+                {copied === i ? <Check size={12} color="#34d399" /> : <Copy size={12} color="var(--text-muted)" />}
               </button>
             </div>
           </div>

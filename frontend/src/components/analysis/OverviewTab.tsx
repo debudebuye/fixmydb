@@ -10,18 +10,18 @@ const Row = ({ children }: { children: React.ReactNode }) => (
 );
 
 const StatCard = ({ label, value, sub, color }: { label: string; value: string | number; sub: string; color: string }) => (
-  <div style={{ background: '#16161f', border: '1px solid #1e1e2a', borderRadius: 10, padding: '16px 18px' }}>
-    <div style={{ fontSize: 11, color: '#3d3d55', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</div>
+  <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 10, padding: '16px 18px' }}>
+    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</div>
     <div style={{ fontSize: 26, fontWeight: 800, color, letterSpacing: '-0.04em', marginBottom: 4 }}>{value}</div>
-    <div style={{ fontSize: 11, color: '#4a5568' }}>{sub}</div>
+    <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{sub}</div>
   </div>
 );
 
 const Section = ({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) => (
-  <div style={{ background: '#16161f', border: '1px solid #1e1e2a', borderRadius: 10, padding: '18px 20px' }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, paddingBottom: 12, borderBottom: '1px solid #1a1a24' }}>
+  <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 10, padding: '18px 20px' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, paddingBottom: 12, borderBottom: '1px solid var(--border-subtle)' }}>
       {icon}
-      <span style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0' }}>{title}</span>
+      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{title}</span>
     </div>
     {children}
   </div>
@@ -49,9 +49,9 @@ export default function OverviewTab({ result }: { result: AnalysisResult }) {
       {/* Summary */}
       <Section title={meta.aiEnhanced ? 'AI-Enhanced Analysis' : 'Analysis Summary'}
         icon={meta.aiEnhanced ? <Sparkles size={14} color="#7c6af7" /> : <TrendingUp size={14} color="#7c6af7" />}>
-        <p style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.7 }}>{summary.overview}</p>
+        <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.7 }}>{summary.overview}</p>
         {summary.scalabilityNotes && (
-          <p style={{ fontSize: 12, color: '#64748b', marginTop: 10, paddingTop: 10, borderTop: '1px solid #1a1a24' }}>
+          <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--border-subtle)' }}>
             <span style={{ color: '#f59e0b', fontWeight: 600 }}>Scalability note: </span>
             {summary.scalabilityNotes}
           </p>
@@ -77,9 +77,9 @@ export default function OverviewTab({ result }: { result: AnalysisResult }) {
                 }}>
                   <IssueBadge severity={issue.severity} />
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 12, color: '#e2e8f0', marginBottom: issue.recommendation ? 4 : 0 }}>{issue.message}</div>
+                    <div style={{ fontSize: 12, color: 'var(--text-primary)', marginBottom: issue.recommendation ? 4 : 0 }}>{issue.message}</div>
                     {issue.recommendation && (
-                      <code style={{ fontSize: 11, color: '#4a5568', fontFamily: 'monospace', display: 'block', lineHeight: 1.5 }}>
+                      <code style={{ fontSize: 11, color: 'var(--text-secondary)', fontFamily: 'monospace', display: 'block', lineHeight: 1.5 }}>
                         {issue.recommendation}
                       </code>
                     )}
@@ -96,7 +96,7 @@ export default function OverviewTab({ result }: { result: AnalysisResult }) {
         <Section title="Architecture Recommendations" icon={<Lightbulb size={14} color="#f59e0b" />}>
           <ul style={{ display: 'flex', flexDirection: 'column', gap: 8, listStyle: 'none' }}>
             {summary.architectureNotes.map((note, i) => (
-              <li key={i} style={{ display: 'flex', gap: 8, fontSize: 13, color: '#94a3b8' }}>
+              <li key={i} style={{ display: 'flex', gap: 8, fontSize: 13, color: 'var(--text-muted)' }}>
                 <span style={{ color: '#7c6af7', fontWeight: 700, marginTop: 1 }}>→</span>
                 {note}
               </li>

@@ -10,33 +10,33 @@ import type { ERNode, EREdge } from '../../types/schema';
 function TableNode({ data }: { data: ERNode['data'] }) {
   return (
     <div style={{
-      background: '#111118', border: '1px solid #252533',
+      background: 'var(--surface-1)', border: '1px solid var(--border-strong)',
       borderRadius: 8, overflow: 'hidden', minWidth: 180,
       boxShadow: '0 4px 20px rgba(0,0,0,0.6)',
     }}>
       <div style={{
-        background: '#16161f', borderBottom: '1px solid #252533',
+        background: 'var(--surface-2)', borderBottom: '1px solid var(--border-strong)',
         padding: '7px 12px', display: 'flex', alignItems: 'center', gap: 6,
       }}>
         <div style={{ width: 8, height: 8, borderRadius: 2, background: '#7c6af7' }} />
-        <span style={{ fontSize: 12, fontWeight: 700, color: '#e2e8f0', fontFamily: 'monospace' }}>{data.label}</span>
+        <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'monospace' }}>{data.label}</span>
       </div>
       {data.columns.map((col, i) => (
         <div key={i} style={{
           position: 'relative', display: 'flex', alignItems: 'center', gap: 8,
           padding: '5px 12px', fontSize: 11, fontFamily: 'monospace',
-          borderBottom: '1px solid #1a1a24',
+          borderBottom: '1px solid var(--border-subtle)',
           background: col.isPrimary ? 'rgba(253,230,138,0.03)' : 'transparent',
         }}>
           <Handle type="target" position={Position.Left} id={`${col.name}-t`}
-            style={{ background: '#252533', width: 6, height: 6, border: '1px solid #3d3d55' }} />
+            style={{ background: '#3d3d55', width: 6, height: 6, border: '1px solid #52526a' }} />
           <span style={{ width: 12, textAlign: 'center', fontSize: 10 }}>
             {col.isPrimary ? '🔑' : col.references ? '🔗' : ''}
           </span>
-          <span style={{ flex: 1, color: col.isPrimary ? '#fde68a' : '#94a3b8' }}>{col.name}</span>
-          <span style={{ color: '#3d3d55', fontSize: 10 }}>{col.type.split('(')[0]}</span>
+          <span style={{ flex: 1, color: col.isPrimary ? '#fde68a' : 'var(--text-secondary)' }}>{col.name}</span>
+          <span style={{ color: 'var(--text-muted)', fontSize: 10 }}>{col.type.split('(')[0]}</span>
           <Handle type="source" position={Position.Right} id={`${col.name}-s`}
-            style={{ background: '#252533', width: 6, height: 6, border: '1px solid #3d3d55' }} />
+            style={{ background: '#3d3d55', width: 6, height: 6, border: '1px solid #52526a' }} />
         </div>
       ))}
     </div>
@@ -51,25 +51,25 @@ export default function ERDiagramTab({ nodes, edges }: { nodes: ERNode[]; edges:
   const onInit = useCallback(() => {}, []);
 
   if (!nodes.length) return (
-    <div style={{ textAlign: 'center', padding: '60px', color: '#3d3d55', fontSize: 13 }}>
+    <div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-muted)', fontSize: 13 }}>
       No tables to display
     </div>
   );
 
   return (
-    <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid #1e1e2a', height: 540 }}>
+    <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid var(--border)', height: 540 }}>
       <ReactFlow
         nodes={fn} edges={fe}
         onNodesChange={onNC} onEdgesChange={onEC}
         onInit={onInit} nodeTypes={nodeTypes}
         fitView fitViewOptions={{ padding: 0.2 }}
-        defaultEdgeOptions={{ style: { stroke: '#252533', strokeWidth: 1.5 }, animated: false }}
-        style={{ background: '#0a0a0f' }}
+        defaultEdgeOptions={{ style: { stroke: 'var(--border-strong)', strokeWidth: 1.5 }, animated: false }}
+        style={{ background: 'var(--surface-0)' }}
       >
-        <Controls style={{ background: '#111118', border: '1px solid #1e1e2a', borderRadius: 8 }} />
-        <MiniMap nodeColor="#16161f" maskColor="rgba(10,10,15,0.8)"
-          style={{ background: '#111118', border: '1px solid #1e1e2a', borderRadius: 8 }} />
-        <Background color="#1e1e2a" gap={20} variant={BackgroundVariant.Dots} />
+        <Controls style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 8 }} />
+        <MiniMap nodeColor="var(--surface-2)" maskColor="rgba(10,10,15,0.8)"
+          style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 8 }} />
+        <Background color="var(--border)" gap={20} variant={BackgroundVariant.Dots} />
       </ReactFlow>
     </div>
   );

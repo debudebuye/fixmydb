@@ -7,8 +7,8 @@
 }
 
 html, body, #root {
-  background: #0a0a0f;
-  color: #e2e8f0;
+  background: var(--surface-0);
+  color: var(--text-primary);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
@@ -16,21 +16,27 @@ html, body, #root {
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #111118; }
-::-webkit-scrollbar-thumb { background: #2d2d3a; border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: #3d3d4e; }
+::-webkit-scrollbar-track { background: var(--surface-1); }
+::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
 
 /* ── Tokens ── */
 :root {
   --surface-0: #0a0a0f;
+  --surface-1-alt: #0d0d14;
   --surface-1: #111118;
   --surface-2: #16161f;
   --surface-3: #1d1d28;
+  --border-subtle: #1a1a24;
   --border: #252533;
+  --border-strong: #252533;
   --border-bright: #32324a;
   --text-primary: #e2e8f0;
-  --text-secondary: #94a3b8;
-  --text-muted: #4a5568;
+  --text-strong: #f1f5f9;
+  --text-secondary: #c4cdd9;
+  --text-muted: #94a3b8;
+  --text-soft: #8898aa;
+  --text-faint: #64748b;
   --accent: #7c6af7;
   --accent-dim: #4c3bb8;
   --accent-glow: rgba(124, 106, 247, 0.15);
@@ -38,11 +44,44 @@ html, body, #root {
   --red: #f43f5e;
   --yellow: #f59e0b;
   --cyan: #06b6d4;
+  --nav-bg: rgba(10,10,15,0.85);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(124,106,247,0.08);
+  --shadow-panel: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow-card: 0 4px 20px rgba(0,0,0,0.6);
+}
+
+:root[data-theme='light'] {
+  --surface-0: #f7f8fb;
+  --surface-1-alt: #ffffff;
+  --surface-1: #ffffff;
+  --surface-2: #f1f5f9;
+  --surface-3: #e8edf5;
+  --border-subtle: #e2e8f0;
+  --border: #d7deea;
+  --border-strong: #cbd5e1;
+  --border-bright: #b6c2d1;
+  --text-primary: #172033;
+  --text-strong: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #475569;
+  --text-soft: #64748b;
+  --text-faint: #64748b;
+  --accent: #6356d4;
+  --accent-dim: #4f46e5;
+  --accent-glow: rgba(99, 86, 212, 0.14);
+  --green: #047857;
+  --red: #dc2626;
+  --yellow: #b45309;
+  --cyan: #0891b2;
+  --nav-bg: rgba(255,255,255,0.82);
+  --shadow-lg: 0 20px 60px rgba(15,23,42,0.12), 0 0 0 1px rgba(99,86,212,0.08);
+  --shadow-panel: 0 4px 24px rgba(15,23,42,0.1);
+  --shadow-card: 0 4px 20px rgba(15,23,42,0.12);
 }
 
 /* ── Dot grid bg ── */
 .dot-grid {
-  background-image: radial-gradient(circle, #2a2a3e 1px, transparent 1px);
+  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 

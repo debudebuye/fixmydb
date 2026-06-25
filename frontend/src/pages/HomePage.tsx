@@ -26,7 +26,7 @@ const USERS = ['Backend Engineers', 'DB Architects', 'Full-Stack Devs', 'Freelan
 
 export default function HomePage() {
   return (
-    <div style={{ background: '#0a0a0f', color: '#e2e8f0' }}>
+    <div style={{ background: 'var(--surface-0)', color: 'var(--text-primary)' }}>
 
       {/* ══════════════════════════════════ HERO ══════════════════════════════════ */}
       <section className="dot-grid" style={{ paddingTop: 80, paddingBottom: 80, position: 'relative', overflow: 'hidden' }}>
@@ -55,13 +55,13 @@ export default function HomePage() {
           <h1 style={{
             fontSize: 'clamp(36px, 6vw, 60px)', fontWeight: 800,
             letterSpacing: '-0.04em', lineHeight: 1.1, marginBottom: 20,
-            color: '#f1f5f9',
+            color: 'var(--text-strong)',
           }}>
             The Database Schema<br />
             <span className="text-gradient">Reviewer for Developers</span>
           </h1>
 
-          <p style={{ fontSize: 16, color: '#64748b', maxWidth: 520, margin: '0 auto 36px', lineHeight: 1.7 }}>
+          <p style={{ fontSize: 16, color: 'var(--text-muted)', maxWidth: 520, margin: '0 auto 36px', lineHeight: 1.7 }}>
             Paste SQL, get an instant health score, normalization report, index recommendations, and ER diagram. No sign-up needed.
           </p>
 
@@ -83,7 +83,7 @@ export default function HomePage() {
       {/* ══════════════════════════════ TERMINAL DEMO ════════════════════════════ */}
       <section style={{ ...S.section, paddingTop: 0, paddingBottom: 80 }}>
         <div style={{
-          background: '#111118', border: '1px solid #1e1e2a',
+          background: 'var(--surface-1)', border: '1px solid var(--border)',
           borderRadius: 12, overflow: 'hidden',
           boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(124,106,247,0.08)',
         }}>
@@ -91,40 +91,40 @@ export default function HomePage() {
           <div style={{
             display: 'flex', alignItems: 'center', gap: 8,
             padding: '10px 16px',
-            background: '#0d0d14', borderBottom: '1px solid #1e1e2a',
+            background: 'var(--surface-1-alt)', borderBottom: '1px solid var(--border)',
           }}>
             <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ef4444' }} />
             <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#f59e0b' }} />
             <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#22c55e' }} />
-            <span style={{ fontSize: 11, color: '#3d3d55', marginLeft: 8, fontFamily: 'monospace' }}>
+            <span style={{ fontSize: 11, color: 'var(--text-muted)', marginLeft: 8, fontFamily: 'monospace' }}>
               fixmydb — analysis output
             </span>
           </div>
 
           {/* Fake terminal output */}
           <div style={{ padding: '20px 24px', fontFamily: 'monospace', fontSize: 13, lineHeight: 1.8 }}>
-            <div style={{ color: '#4a5568' }}>$ fixmydb analyze schema.sql</div>
-            <div style={{ color: '#64748b', marginTop: 8 }}>→ Parsing SQL schema...</div>
-            <div style={{ color: '#64748b' }}>→ Running analysis engine...</div>
-            <div style={{ color: '#64748b', marginBottom: 16 }}>→ Generating recommendations...</div>
+            <div style={{ color: 'var(--text-secondary)' }}>$ fixmydb analyze schema.sql</div>
+            <div style={{ color: 'var(--text-muted)', marginTop: 8 }}>→ Parsing SQL schema...</div>
+            <div style={{ color: 'var(--text-muted)' }}>→ Running analysis engine...</div>
+            <div style={{ color: 'var(--text-muted)', marginBottom: 16 }}>→ Generating recommendations...</div>
 
             {/* Result block */}
-            <div style={{ borderTop: '1px solid #1e1e2a', paddingTop: 16 }}>
+            <div style={{ borderTop: '1px solid var(--border)', paddingTop: 16 }}>
               <div style={{ display: 'flex', gap: 32, marginBottom: 16, flexWrap: 'wrap' }}>
                 <div>
-                  <div style={{ fontSize: 11, color: '#4a5568', marginBottom: 4 }}>SCHEMA SCORE</div>
-                  <div style={{ fontSize: 28, fontWeight: 700, color: '#f59e0b' }}>78 <span style={{ fontSize: 14, color: '#3d3d55' }}>/100</span></div>
+                  <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 4 }}>SCHEMA SCORE</div>
+                  <div style={{ fontSize: 28, fontWeight: 700, color: '#f59e0b' }}>78 <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>/100</span></div>
                 </div>
                 <div>
-                  <div style={{ fontSize: 11, color: '#4a5568', marginBottom: 4 }}>TABLES</div>
-                  <div style={{ fontSize: 28, fontWeight: 700, color: '#e2e8f0' }}>5</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 4 }}>TABLES</div>
+                  <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--text-primary)' }}>5</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: 11, color: '#4a5568', marginBottom: 4 }}>ISSUES</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 4 }}>ISSUES</div>
                   <div style={{ fontSize: 28, fontWeight: 700, color: '#f43f5e' }}>4</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: 11, color: '#4a5568', marginBottom: 4 }}>RECOMMENDATIONS</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 4 }}>RECOMMENDATIONS</div>
                   <div style={{ fontSize: 28, fontWeight: 700, color: '#10b981' }}>6</div>
                 </div>
               </div>
@@ -144,7 +144,7 @@ export default function HomePage() {
                     fontFamily: 'monospace', fontSize: 12,
                   }}>
                     <span style={{ color: item.color, fontWeight: 700, minWidth: 40, paddingTop: 1 }}>{item.level}</span>
-                    <span style={{ color: '#94a3b8' }}>{item.msg}</span>
+                    <span style={{ color: 'var(--text-muted)' }}>{item.msg}</span>
                   </div>
                 ))}
               </div>
@@ -159,55 +159,54 @@ export default function HomePage() {
           <div style={{ fontSize: 11, fontWeight: 600, color: '#7c6af7', letterSpacing: '0.08em', marginBottom: 12, textTransform: 'uppercase' }}>
             Features
           </div>
-          <h2 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.03em', color: '#f1f5f9', marginBottom: 8 }}>
+          <h2 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.03em', color: 'var(--text-strong)', marginBottom: 8 }}>
             Six analysis modules, zero config
           </h2>
-          <p style={{ fontSize: 14, color: '#64748b', maxWidth: 480 }}>
+          <p style={{ fontSize: 14, color: 'var(--text-muted)', maxWidth: 480 }}>
             Drop in your schema and every module runs automatically. No setup, no plugins, no config files.
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 1, background: '#1e1e2a', border: '1px solid #1e1e2a', borderRadius: 12, overflow: 'hidden' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 1, background: 'var(--border)', border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden' }}>
           {FEATURES.map((f, i) => (
             <div key={i} style={{
-              background: '#111118',
+              background: 'var(--surface-1)',
               padding: '20px 22px',
               transition: 'background 0.15s',
               cursor: 'default',
             }}
               onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = '#141420'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = '#111118'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'var(--surface-1)'; }}
             >
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 10 }}>
                 <div style={{
                   width: 32, height: 32, borderRadius: 8,
-                  background: '#1d1d28', border: '1px solid #252533',
+                  background: 'var(--surface-3)', border: '1px solid var(--border-strong)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
                   {f.icon}
                 </div>
                 <span className="badge badge-gray">{f.tag}</span>
               </div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#e2e8f0', marginBottom: 6 }}>{f.title}</div>
-              <div style={{ fontSize: 13, color: '#64748b', lineHeight: 1.6 }}>{f.desc}</div>
-            </div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>{f.title}</div>
+              <div style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6 }}>{f.desc}</div>            </div>
           ))}
         </div>
       </section>
 
       {/* ═════════════════════════════ HOW IT WORKS ══════════════════════════════ */}
-      <section style={{ borderTop: '1px solid #1e1e2a', borderBottom: '1px solid #1e1e2a', padding: '64px 0', background: '#0d0d14' }}>
+      <section style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '64px 0', background: 'var(--surface-1-alt)' }}>
         <div style={S.section}>
           <div style={{ fontSize: 11, fontWeight: 600, color: '#7c6af7', letterSpacing: '0.08em', marginBottom: 12, textTransform: 'uppercase' }}>
             Workflow
           </div>
-          <h2 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.03em', color: '#f1f5f9', marginBottom: 40 }}>
+          <h2 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.03em', color: 'var(--text-strong)', marginBottom: 40 }}>
             From schema to insights in 4 steps
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 16 }}>
             {STEPS.map((step, i) => (
               <div key={i} style={{
-                background: '#111118', border: '1px solid #1e1e2a',
+                background: 'var(--surface-1)', border: '1px solid var(--border)',
                 borderRadius: 10, padding: '18px 20px',
                 display: 'flex', alignItems: 'flex-start', gap: 12,
               }}>
@@ -219,7 +218,7 @@ export default function HomePage() {
                 }}>
                   {step.n}
                 </div>
-                <span style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.5, paddingTop: 4 }}>{step.label}</span>
+                <span style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5, paddingTop: 4 }}>{step.label}</span>
               </div>
             ))}
           </div>
@@ -236,8 +235,8 @@ export default function HomePage() {
             <div key={i} style={{
               display: 'flex', alignItems: 'center', gap: 6,
               padding: '6px 12px', borderRadius: 7,
-              background: '#111118', border: '1px solid #1e1e2a',
-              fontSize: 12, color: '#94a3b8',
+              background: 'var(--surface-1)', border: '1px solid var(--border)',
+              fontSize: 12, color: 'var(--text-secondary)',
             }}>
               <CheckCircle2 size={12} color="#10b981" />
               {u}
@@ -247,15 +246,15 @@ export default function HomePage() {
       </section>
 
       {/* ═════════════════════════════════ CTA ═══════════════════════════════════ */}
-      <section style={{ borderTop: '1px solid #1e1e2a', background: '#0d0d14', padding: '64px 24px' }}>
+      <section style={{ borderTop: '1px solid var(--border)', background: 'var(--surface-1-alt)', padding: '64px 24px' }}>
         <div style={{ maxWidth: 540, margin: '0 auto', textAlign: 'center' }}>
           <div style={{ fontSize: 11, fontWeight: 600, color: '#7c6af7', letterSpacing: '0.08em', marginBottom: 16, textTransform: 'uppercase' }}>
             Get started
           </div>
-          <h2 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.03em', color: '#f1f5f9', marginBottom: 12 }}>
+          <h2 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.03em', color: 'var(--text-strong)', marginBottom: 12 }}>
             Run your first analysis
           </h2>
-          <p style={{ fontSize: 14, color: '#64748b', marginBottom: 28, lineHeight: 1.7 }}>
+          <p style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 28, lineHeight: 1.7 }}>
             Paste a CREATE TABLE statement and get a full schema review in under 5 seconds. No sign-up, no limits.
           </p>
           <Link to="/analyze" className="btn-primary"

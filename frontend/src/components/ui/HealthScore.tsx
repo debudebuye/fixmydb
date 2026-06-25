@@ -14,7 +14,7 @@ export default function HealthScore({ score }: Props) {
 
   return (
     <div style={{
-      background: '#111118', border: '1px solid #1e1e2a',
+      background: 'var(--surface-1)', border: '1px solid var(--border)',
       borderRadius: 10, padding: '20px',
       display: 'flex', flexDirection: 'column', alignItems: 'center',
       boxShadow: `0 0 24px ${glow}`,
@@ -31,11 +31,11 @@ export default function HealthScore({ score }: Props) {
         </svg>
         <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <span style={{ fontSize: 22, fontWeight: 800, color, letterSpacing: '-0.05em' }}>{score}</span>
-          <span style={{ fontSize: 10, color: '#3d3d55' }}>/100</span>
+          <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>/100</span>
         </div>
       </div>
       <span style={{ fontSize: 12, fontWeight: 600, color, marginBottom: 2 }}>{label}</span>
-      <span style={{ fontSize: 11, color: '#3d3d55' }}>Health Score</span>
+      <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Health Score</span>
     </div>
   );
 }

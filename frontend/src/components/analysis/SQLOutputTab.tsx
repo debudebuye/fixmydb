@@ -17,14 +17,14 @@ export default function SQLOutputTab({ sql }: { sql: string }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
-        <p style={{ fontSize: 13, color: '#64748b' }}>Optimized schema with all recommended fixes applied.</p>
+        <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>Optimized schema with all recommended fixes applied.</p>
         <div style={{ display: 'flex', gap: 8 }}>
           <button onClick={copy} style={{
             display: 'flex', alignItems: 'center', gap: 6,
             padding: '6px 12px', fontSize: 12, fontWeight: 500,
-            background: copied ? 'rgba(16,185,129,0.1)' : '#16161f',
-            border: `1px solid ${copied ? 'rgba(16,185,129,0.25)' : '#1e1e2a'}`,
-            color: copied ? '#34d399' : '#64748b', borderRadius: 7, cursor: 'pointer',
+            background: copied ? 'rgba(16,185,129,0.1)' : 'var(--surface-2)',
+            border: `1px solid ${copied ? 'rgba(16,185,129,0.25)' : 'var(--border)'}`,
+            color: copied ? '#34d399' : 'var(--text-muted)', borderRadius: 7, cursor: 'pointer',
           }}>
             {copied ? <Check size={12} /> : <Copy size={12} />} {copied ? 'Copied' : 'Copy'}
           </button>
@@ -35,7 +35,7 @@ export default function SQLOutputTab({ sql }: { sql: string }) {
           </button>
         </div>
       </div>
-      <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid #1e1e2a' }}>
+      <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid var(--border)' }}>
         <Editor height="520px" language="sql" value={sql} theme="vs-dark"
           options={{
             readOnly: true, fontSize: 13,

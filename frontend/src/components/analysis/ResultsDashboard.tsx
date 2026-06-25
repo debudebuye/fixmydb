@@ -32,12 +32,12 @@ export default function ResultsDashboard({ result }: Props) {
   };
 
   return (
-    <div style={{ background: '#111118', border: '1px solid #1e1e2a', borderRadius: 10, overflow: 'hidden' }}>
+    <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden' }}>
       {/* Tab bar */}
       <div style={{
         display: 'flex', overflowX: 'auto',
-        borderBottom: '1px solid #1e1e2a',
-        background: '#0d0d14',
+        borderBottom: '1px solid var(--border)',
+        background: 'var(--surface-1-alt)',
       }}>
         {TABS.map(({ id, label, Icon }) => {
           const on = active === id;
@@ -48,13 +48,13 @@ export default function ResultsDashboard({ result }: Props) {
               style={{
                 display: 'flex', alignItems: 'center', gap: 7,
                 padding: '11px 16px', fontSize: 12, fontWeight: on ? 600 : 500,
-                color: on ? '#e2e8f0' : '#4a5568',
+                color: on ? 'var(--text-primary)' : 'var(--text-muted)',
                 background: 'transparent', border: 'none', cursor: 'pointer',
                 whiteSpace: 'nowrap', transition: 'color 0.15s',
                 borderBottom: on ? '2px solid #7c6af7' : '2px solid transparent',
               }}
-              onMouseEnter={e => { if (!on) (e.currentTarget as HTMLButtonElement).style.color = '#94a3b8'; }}
-              onMouseLeave={e => { if (!on) (e.currentTarget as HTMLButtonElement).style.color = '#4a5568'; }}
+              onMouseEnter={e => { if (!on) (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-secondary)'; }}
+              onMouseLeave={e => { if (!on) (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-muted)'; }}
             >
               <Icon size={13} />
               {label}

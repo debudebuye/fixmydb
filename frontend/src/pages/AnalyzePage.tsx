@@ -35,7 +35,7 @@ export default function AnalyzePage() {
   };
 
   return (
-    <div style={{ background: '#0a0a0f', minHeight: '100vh', padding: '32px 0' }}>
+    <div style={{ background: 'var(--surface-0)', minHeight: '100vh', padding: '32px 0' }}>
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px' }}>
 
         {/* Page header */}
@@ -48,11 +48,11 @@ export default function AnalyzePage() {
             }}>
               <Terminal size={15} color="#7c6af7" />
             </div>
-            <h1 style={{ fontSize: 18, fontWeight: 700, color: '#f1f5f9', letterSpacing: '-0.02em' }}>
+            <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-strong)', letterSpacing: '-0.02em' }}>
               Schema Analyzer
             </h1>
           </div>
-          <p style={{ fontSize: 13, color: '#4a5568', marginLeft: 42 }}>
+          <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginLeft: 42 }}>
             Paste SQL or upload a file · Get instant health score, normalization report, and index recommendations
           </p>
         </div>
@@ -74,7 +74,7 @@ export default function AnalyzePage() {
             <AlertCircle size={15} color="#f43f5e" style={{ flexShrink: 0, marginTop: 1 }} />
             <div>
               <div style={{ fontSize: 13, fontWeight: 600, color: '#fb7185' }}>Analysis failed</div>
-              <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>{error}</div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>{error}</div>
             </div>
           </div>
         )}
@@ -86,12 +86,12 @@ export default function AnalyzePage() {
               {/* Spinner */}
               <div style={{
                 width: 36, height: 36, borderRadius: '50%',
-                border: '2px solid #1e1e2a',
+                border: '2px solid var(--border)',
                 borderTopColor: '#7c6af7',
                 animation: 'spin 0.7s linear infinite',
               }} />
               <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-              <div style={{ fontSize: 13, color: '#64748b' }}>Running analysis…</div>
+              <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>Running analysis…</div>
             </div>
           </div>
         )}
