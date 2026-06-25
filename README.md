@@ -6,7 +6,7 @@
 
 **FixMyDB** helps developers review, optimize, normalize, and improve database schemas in seconds. Built as an AI-powered Database Architect and Schema Reviewer, it saves developers time by automatically analyzing database schemas and providing actionable recommendations.
 
-🚀 **No subscriptions. No paid plans. 100% Open Source.**
+**No subscriptions. No paid plans. 100% Open Source.**
 
 ## Features
 
