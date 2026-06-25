@@ -164,6 +164,7 @@ export default function HomePage() {
           </h2>
           <p style={{ fontSize: 14, color: 'var(--text-muted)', maxWidth: 480 }}>
             Drop in your schema and every module runs automatically. No setup, no plugins, no config files.
+            Unlike other tools, FixMyDB delivers a full, cross-module schema review in one pass, with no manual tuning or hidden dependencies.
           </p>
         </div>
 

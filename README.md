@@ -17,6 +17,16 @@ FixMyDB V1
    - Upload SQL files (.sql, .json, .txt)
    - Visual Schema Builder (coming soon)
 
+2. **Unique Zero-Config Analysis**
+   - Six automatic analysis modules run on every schema
+   - No setup, no plugins, no config files
+   - One-pass schema review with immediate, cross-module insights
+
+3. **Schema Analysis Engine**
+   - Database Health Score (0-100)
+   - Detect missing keys, duplicates, and naming issues
+   - Identify scalability concerns
+
 2. **Schema Analysis Engine**
    - Database Health Score (0-100)
    - Detect missing keys, duplicates, and naming issues
