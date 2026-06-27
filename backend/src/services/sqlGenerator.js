@@ -9,7 +9,7 @@ function generateOptimizedSQL(schema, analysis, dialect = 'postgresql') {
 
   const isPg = dialect.toLowerCase() !== 'mysql';
 
-  lines.push(`-- FixMyDB Optimized Schema (${isPg ? 'PostgreSQL' : 'MySQL'})`);
+  lines.push(`-- FixMyDB Recommended Schema (${isPg ? 'PostgreSQL' : 'MySQL'})`);
   lines.push(`-- Generated at ${new Date().toISOString()}`);
   lines.push('');
 
@@ -32,7 +32,10 @@ function generateOptimizedSQL(schema, analysis, dialect = 'postgresql') {
         if (!column.nullable) def += ' NOT NULL';
         if (column.isUnique) def += ' UNIQUE';
         if (column.default !== null && column.default !== undefined) {
-          def += ` DEFAULT ${column.default}`;
+          def += ` DEFAULT ${formatDefault(column.default)}`;
+        }
+        if (column.check) {
+          def += ` ${column.check}`;
         }
       }
 
@@ -49,6 +52,20 @@ function generateOptimizedSQL(schema, analysis, dialect = 'postgresql') {
       colDefs.push(
         `  CONSTRAINT fk_${table.name}_${fk.column} FOREIGN KEY (${fk.column}) REFERENCES ${fk.references.table}(${fk.references.column})`
       );
+    }
+
+    if (table.checks && table.checks.length > 0) {
+      for (const check of table.checks) {
+        colDefs.push(`  ${check}`);
+      }
+    }
+
+    if (table.constraints) {
+      for (const constraint of table.constraints) {
+        if (constraint.type === 'unique') {
+          colDefs.push(`  ${constraint.sql}`);
+        }
+      }
     }
 
     lines.push(colDefs.join(',\n'));
@@ -87,7 +104,27 @@ function generateOptimizedSQL(schema, analysis, dialect = 'postgresql') {
     }
   }
 
+  const fkRecs = recommendations.filter(r => r.type === 'possible_foreign_key');
+  if (fkRecs.length > 0) {
+    lines.push('-- Review these potential foreign key suggestions');
+    for (const rec of fkRecs) {
+      if (rec.sql) lines.push(rec.sql);
+    }
+    lines.push('');
+  }
+
   return lines.join('\n');
+}
+
+function formatDefault(value) {
+  if (value === null || value === undefined) return 'NULL';
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return String(value);
+  }
 }
 
 function formatType(type, isPg) {

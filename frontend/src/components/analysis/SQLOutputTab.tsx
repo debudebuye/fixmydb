@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import Editor from '@monaco-editor/react';
 import { Copy, Check, Download } from 'lucide-react';
+import { useTheme } from '../../theme';
 
 export default function SQLOutputTab({ sql }: { sql: string }) {
   const [copied, setCopied] = useState(false);
 
+  const { theme } = useTheme();
   const copy = () => { navigator.clipboard.writeText(sql); setCopied(true); setTimeout(() => setCopied(false), 2000); };
   const download = () => {
     const a = Object.assign(document.createElement('a'), {
@@ -36,7 +38,7 @@ export default function SQLOutputTab({ sql }: { sql: string }) {
         </div>
       </div>
       <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid var(--border)' }}>
-        <Editor height="520px" language="sql" value={sql} theme="vs-dark"
+        <Editor height="520px" language="sql" value={sql} theme={theme === 'light' ? 'vs' : 'vs-dark'}
           options={{
             readOnly: true, fontSize: 13,
             fontFamily: "'JetBrains Mono', 'Fira Code', monospace",

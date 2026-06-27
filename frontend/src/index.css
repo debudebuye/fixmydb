@@ -198,5 +198,6 @@ code, pre, .mono {
 .monaco-editor .margin,
 .monaco-editor-background,
 .monaco-editor .inputarea.ime-input {
-  background-color: #111118 !important;
+  background-color: var(--surface-1) !important;
+  color: var(--text-primary) !important;
 }

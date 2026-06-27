@@ -176,7 +176,7 @@ export default function HomePage() {
               transition: 'background 0.15s',
               cursor: 'default',
             }}
-              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = '#141420'; }}
+              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'var(--surface-3)'; }}
               onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'var(--surface-1)'; }}
             >
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 10 }}>

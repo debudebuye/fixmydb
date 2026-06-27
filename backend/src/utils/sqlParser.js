@@ -15,7 +15,8 @@ function parseSQLSchema(sql) {
   const statements = sql
     .split(/;\s*\n|;\s*$/)
     .map(s => s.trim())
-    .filter(s => s.length > 0 && s.toUpperCase().startsWith('CREATE TABLE'));
+    .map(stripLeadingComments)
+    .filter(s => s.length > 0 && /^CREATE\s+TABLE/i.test(s));
 
   for (const stmt of statements) {
     try {
@@ -28,6 +29,12 @@ function parseSQLSchema(sql) {
       const table = manualParseCreateTable(stmt);
       if (table) tables.push(table);
     }
+  }
+
+  function stripLeadingComments(statement) {
+    return statement
+      .replace(/^(?:\s*--.*(?:\r?\n|$))+/, '')
+      .trim();
   }
 
   // Extract relationships from foreign keys
@@ -44,6 +51,50 @@ function parseSQLSchema(sql) {
   }
 
   return { tables, relationships };
+}
+
+function formatExpression(expr) {
+  if (!expr) return '';
+  switch (expr.type) {
+    case 'binary_expr':
+      return `${formatExpression(expr.left)} ${expr.operator} ${formatExpression(expr.right)}`;
+    case 'column_ref':
+      return extractColumnName(expr) || '';
+    case 'number':
+    case 'int':
+    case 'float':
+      return String(expr.value);
+    case 'single_quote_string':
+      return `'${expr.value}'`;
+    case 'bool':
+      return String(expr.value).toUpperCase();
+    case 'default':
+      return typeof expr.value === 'string' ? expr.value : formatExpression(expr.value);
+    case 'function':
+      const fnName = Array.isArray(expr.name?.name)
+        ? expr.name.name.map(part => typeof part === 'object' ? part.value : part).join('')
+        : expr.name?.name || '';
+      const args = Array.isArray(expr.args?.value)
+        ? expr.args.value.map(formatExpression).join(', ')
+        : '';
+      return `${fnName}(${args})`;
+    case 'expr_list':
+      return Array.isArray(expr.value) ? expr.value.map(formatExpression).join(', ') : '';
+    default:
+      return String(expr.value || '');
+  }
+}
+
+function formatCheckConstraint(def) {
+  if (!def) return null;
+  const definition = def.definition || (def.check?.definition ? def.check.definition : null);
+  if (Array.isArray(definition) && definition.length > 0) {
+    return `CHECK (${formatExpression(definition[0])})`;
+  }
+  if (def.type === 'check') {
+    return `CHECK (${formatExpression(def)})`;
+  }
+  return null;
 }
 
 /**
@@ -63,19 +114,23 @@ function parseCreateTable(stmt) {
     const primaryKeys = [];
     const foreignKeys = [];
     const indexes = [];
+    const checks = [];
+    const constraints = [];
 
     const definitions = node.create_definitions || [];
     for (const def of definitions) {
       if (def.resource === 'column') {
         const colName = extractColumnName(def);
+        const defaultVal = parseDefaultValue(def.default_val);
         const col = {
           name: String(colName || 'unknown'),
           type: def.definition?.dataType || 'UNKNOWN',
           nullable: def.nullable?.value !== 'NOT NULL',
-          default: def.default_val?.value ?? null,
+          default: defaultVal,
           isPrimary: false,
           isUnique: false,
           references: null,
+          check: null,
         };
 
         // Check inline primary key
@@ -87,6 +142,16 @@ function parseCreateTable(stmt) {
         // Check inline unique
         if (def.unique || def.unique_or_primary === 'unique') {
           col.isUnique = true;
+        }
+
+        // Column-level CHECK constraint
+        if (def.check) {
+          const checkSql = formatCheckConstraint(def.check);
+          col.check = checkSql;
+          if (checkSql) {
+            constraints.push({ type: 'check', sql: checkSql });
+            checks.push(checkSql);
+          }
         }
 
         // Check inline foreign key / references
@@ -149,6 +214,19 @@ function parseCreateTable(stmt) {
             const col = columns.find(c => c.name === uc);
             if (col) col.isUnique = true;
           }
+          if (uCols.length > 0) {
+            constraints.push({
+              type: 'unique',
+              columns: uCols,
+              sql: `UNIQUE (${uCols.join(', ')})`,
+            });
+          }
+        } else if (def.constraint_type === 'check') {
+          const checkSql = formatCheckConstraint(def);
+          if (checkSql) {
+            checks.push(checkSql);
+            constraints.push({ type: 'check', sql: checkSql });
+          }
         } else if (def.index_type === 'index' || def.constraint_type === 'index') {
           const idxCols = (def.definition || []).map(d => extractDefColumnName(d)).filter(Boolean);
           indexes.push({ columns: idxCols, type: 'INDEX' });
@@ -162,6 +240,8 @@ function parseCreateTable(stmt) {
       primaryKeys,
       foreignKeys,
       indexes,
+      checks,
+      constraints,
     };
   } catch (err) {
     return null;
@@ -202,6 +282,36 @@ function extractDefColumnName(def) {
   return null;
 }
 
+function parseDefaultValue(defaultVal) {
+  if (defaultVal === null || defaultVal === undefined) return null;
+  if (typeof defaultVal !== 'object') return defaultVal;
+  if (defaultVal.type === 'default' && defaultVal.value !== undefined) {
+    const val = defaultVal.value;
+    if (typeof val === 'string') return val;
+    if (val === null || val === undefined) return null;
+    if (val.type === 'single_quote_string') return `'${val.value}'`;
+    if (val.type === 'number' || val.type === 'int' || val.type === 'float') return String(val.value);
+    if (val.type === 'bool') return String(val.value).toUpperCase();
+    if (val.type === 'column_ref') return extractColumnName(val);
+    if (val.type === 'function') {
+      const fnName = Array.isArray(val.name?.name)
+        ? val.name.name.map(part => typeof part === 'object' ? part.value : part).join('')
+        : val.name?.name || '';
+      const args = Array.isArray(val.args?.value)
+        ? val.args.value.map(arg => parseDefaultValue({ type: arg.type, value: arg.value })).filter(Boolean).join(', ')
+        : '';
+      return `${fnName}(${args})`;
+    }
+    if (typeof val === 'object' && val.value !== undefined) {
+      return parseDefaultValue(val);
+    }
+  }
+  try {
+    return parser.sqlify(defaultVal);
+  } catch {
+    return null;
+  }
+}
 
 function manualParseCreateTable(stmt) {
   const tableNameMatch = stmt.match(/CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?["`]?(\w+)["`]?\s*\(/i);
@@ -260,6 +370,11 @@ function manualParseCreateTable(stmt) {
       continue;
     }
 
+    if (upper.startsWith('CHECK')) {
+      checks.push(trimmed.replace(/,$/, ''));
+      continue;
+    }
+
     // Column definition
     const colMatch = trimmed.match(/^["`]?(\w+)["`]?\s+(\w+(?:\s*\([^)]*\))?)/);
     if (!colMatch) continue;
@@ -286,13 +401,13 @@ function manualParseCreateTable(stmt) {
     }
 
     // Default value
-    const defaultMatch = trimmed.match(/DEFAULT\s+([^\s,]+)/i);
-    if (defaultMatch) col.default = defaultMatch[1];
+    const defaultMatch = trimmed.match(/DEFAULT\s+(.+?)(?:\s+NOT\s+NULL|\s+NULL|\s+UNIQUE|\s+CHECK|\s+REFERENCES|\s+PRIMARY\s+KEY|,|$)/i);
+    if (defaultMatch) col.default = defaultMatch[1].trim().replace(/,$/, '');
 
     columns.push(col);
   }
 
-  return { name: tableName, columns, primaryKeys, foreignKeys, indexes };
+  return { name: tableName, columns, primaryKeys, foreignKeys, indexes, checks };
 }
 
 function extractTableName(stmt) {

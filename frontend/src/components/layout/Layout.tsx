@@ -13,7 +13,7 @@ export default function Layout({ children }: LayoutProps) {
       {/* ── NAV ── */}
       <nav style={{
         position: 'sticky', top: 0, zIndex: 50,
-        background: 'rgba(10,10,15,0.85)',
+        background: 'var(--nav-bg)',
         borderBottom: '1px solid var(--border)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',

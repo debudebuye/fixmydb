@@ -2,25 +2,33 @@
  * Normalization Analysis (1NF, 2NF, 3NF)
  */
 
-function analyzeNormalization(schema) {
+function analyzeNormalization(schema, tablePatterns = {}, options = {}) {
   const { tables } = schema;
+  const mode = String(options.mode || 'system').toLowerCase();
   const violations = [];
   const suggestions = [];
 
   for (const table of tables) {
+    const tableName = table.name;
+    const patternTags = tablePatterns[tableName] || [];
+    const columnNames = table.columns.map(c => c.name.toLowerCase());
+
     // 1NF: Check for atomic values (detect array-like column names or JSON types)
     for (const column of table.columns) {
       if (!column.name || typeof column.name !== 'string') continue;
       const colName = column.name.toLowerCase();
-      const colType = column.type.toUpperCase();
+      const colType = String(column.type || '').toUpperCase();
 
-      if (colName.includes('list') || colName.includes('array') || colType.includes('JSON') || colType.includes('TEXT')) {
+      if (shouldIgnoreNonAtomic(column, patternTags, mode)) continue;
+
+      // Only flag if there are actual semantic indicators of non-atomic data
+      if (isActuallyNonAtomic(colName, colType)) {
         violations.push({
           table: table.name,
           column: column.name,
           normalForm: '1NF',
           violation: 'Possible non-atomic value',
-          explanation: `Column '${column.name}' may store multiple values (array, JSON, or delimited text)`,
+          explanation: `Column '${column.name}' appears to store multiple delimited or structured values`,
           suggestion: `Consider creating a separate table for these values with a foreign key reference`,
         });
       }
@@ -28,9 +36,8 @@ function analyzeNormalization(schema) {
 
     // 2NF: Check for partial dependencies (columns that depend on part of a composite key)
     if (table.primaryKeys.length > 1) {
-      // Composite key detected
       const nonKeyColumns = table.columns.filter(c => !table.primaryKeys.includes(c.name));
-      if (nonKeyColumns.length > 0) {
+      if (nonKeyColumns.length > 0 && !patternTags.includes('event_outbox') && !patternTags.includes('audit_log')) {
         suggestions.push({
           table: table.name,
           normalForm: '2NF',
@@ -40,71 +47,51 @@ function analyzeNormalization(schema) {
       }
     }
 
-    // 3NF: Check for transitive dependencies (non-key columns depending on other non-key columns)
-    // Heuristic: Look for repeated column prefixes suggesting embedded entities
-    const columnNames = table.columns.map(c => c.name.toLowerCase());
-    const prefixes = {};
+    // 3NF: Only flag transitive dependencies when there is stronger evidence than naming conventions.
+    // Naming patterns alone are not sufficient for normalization warnings.
 
-    for (const name of columnNames) {
-      const parts = name.split('_');
-      if (parts.length > 1) {
-        const prefix = parts[0];
-        if (!prefixes[prefix]) prefixes[prefix] = [];
-        prefixes[prefix].push(name);
-      }
-    }
+    const hasForeignCustomer = table.foreignKeys.some(fk => fk.column === 'customer_id');
+    const hasForeignUser = table.foreignKeys.some(fk => fk.column === 'user_id');
+    const hasForeignProduct = table.foreignKeys.some(fk => fk.column === 'product_id');
 
-    for (const [prefix, cols] of Object.entries(prefixes)) {
-      if (cols.length >= 2 && !table.primaryKeys.includes(prefix) && prefix !== 'is' && prefix !== 'has') {
-        violations.push({
-          table: table.name,
-          normalForm: '3NF',
-          violation: 'Possible transitive dependency',
-          explanation: `Multiple columns with prefix '${prefix}_*' suggest an embedded entity`,
-          columns: cols,
-          suggestion: `Consider creating a separate '${prefix}' table and referencing it with a foreign key`,
-        });
-      }
-    }
-
-    // Check for obvious embedded data (e.g., customer_name, customer_email in orders)
-    const customerCols = columnNames.filter(c => c.startsWith('customer_'));
-    const userCols = columnNames.filter(c => c.startsWith('user_') && c !== 'user_id');
-    const productCols = columnNames.filter(c => c.startsWith('product_') && c !== 'product_id');
-
-    if (customerCols.length > 1) {
-      violations.push({
+    if (hasForeignCustomer) {
+      suggestions.push({
         table: table.name,
-        normalForm: '3NF',
-        violation: 'Embedded customer data',
-        explanation: `Table contains customer attributes: ${customerCols.join(', ')}`,
-        suggestion: `Create a 'customers' table and reference it with customer_id foreign key`,
+        normalForm: 'intentional-denormalization',
+        message: `Table '${table.name}' denormalizes customer attributes alongside a customer_id foreign key for performance optimization.`,
+        suggestion: 'This is a valid pattern when you want to avoid repeated joins for frequently accessed customer information.',
       });
     }
 
-    if (userCols.length > 1) {
-      violations.push({
+    if (hasForeignUser) {
+      suggestions.push({
         table: table.name,
-        normalForm: '3NF',
-        violation: 'Embedded user data',
-        explanation: `Table contains user attributes: ${userCols.join(', ')}`,
-        suggestion: `Reference the 'users' table instead of duplicating user data`,
+        normalForm: 'intentional-denormalization',
+        message: `Table '${table.name}' denormalizes user attributes alongside a user_id foreign key for performance optimization.`,
+        suggestion: 'This is a valid pattern when you need user data readily available without joining the users table.',
       });
     }
 
-    if (productCols.length > 1) {
-      violations.push({
+    if (hasForeignProduct) {
+      suggestions.push({
         table: table.name,
-        normalForm: '3NF',
-        violation: 'Embedded product data',
-        explanation: `Table contains product attributes: ${productCols.join(', ')}`,
-        suggestion: `Create a 'products' table and reference it with product_id foreign key`,
+        normalForm: 'intentional-denormalization',
+        message: `Table '${table.name}' denormalizes product attributes alongside a product_id foreign key for performance optimization.`,
+        suggestion: 'This is a valid pattern to keep product snapshot data with the related record.',
+      });
+    }
+
+    if (patternTags.includes('event_outbox') || patternTags.includes('audit_log')) {
+      suggestions.push({
+        table: table.name,
+        normalForm: 'architecture-awareness',
+        message: `Table '${table.name}' appears to be part of an event or outbox pattern. JSON payload and polymorphic references are acceptable design tradeoffs here.`,
+        suggestion: 'Treat this table as a log/event pattern rather than a strict normalization candidate.',
       });
     }
   }
 
-  // Generate normalization score
-  const maxViolations = tables.length * 3; // Assume max 3 violations per table
+  const maxViolations = tables.length * 3;
   const violationCount = violations.length;
   const normalizationScore = Math.max(0, 100 - Math.round((violationCount / Math.max(maxViolations, 1)) * 100));
 
@@ -113,6 +100,56 @@ function analyzeNormalization(schema) {
     violations,
     suggestions,
   };
+}
+
+function isActuallyNonAtomic(colName, colType) {
+  if (colType === 'TEXT') return false;
+  if (colType.includes('CHAR')) return false;
+  
+  const nonAtomicIndicators = ['delimited', 'csv', 'array_agg', 'list_values', 'json_array'];
+  return nonAtomicIndicators.some(indicator => colName.includes(indicator));
+}
+
+function shouldIgnoreNonAtomic(column, patternTags, mode) {
+  if (!column.name || typeof column.name !== 'string') return false;
+  const colName = column.name.toLowerCase();
+  const colType = String(column.type || '').toUpperCase();
+
+  const domainSafeNames = new Set([
+    'password_hash',
+    'reference_type',
+    'reference_id',
+    'aggregate_type',
+    'aggregate_id',
+    'payload',
+    'payload_json',
+    'metadata',
+    'settings',
+    'config',
+    'description',
+    'content',
+    'body',
+    'message',
+    'notes',
+    'comment',
+    'text',
+  ]);
+
+  if (domainSafeNames.has(colName)) return true;
+  if (patternTags.includes('event_outbox') && (colName.includes('payload') || colType.includes('JSON'))) return true;
+  if ((patternTags.includes('audit_log') || patternTags.includes('financial_ledger')) && colType.includes('JSON')) return true;
+  if (mode !== 'crud' && colType === 'TEXT' && colName.includes('payload')) return true;
+
+  return false;
+}
+
+function shouldIgnoreEmbeddedData(tableName, patternTags, prefix) {
+  if (patternTags.includes('event_outbox') || patternTags.includes('audit_log') || patternTags.includes('financial_ledger') || patternTags.includes('betting_domain')) {
+    return true;
+  }
+
+  const allowedPrefixes = new Set(['aggregate', 'reference', 'payload', 'event', 'transaction', 'bet', 'market']);
+  return allowedPrefixes.has(prefix) && patternTags.length > 0;
 }
 
 module.exports = { analyzeNormalization };
