@@ -14,4 +14,15 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id: string) {
+          if (id.includes('monaco-editor')) return 'monaco';
+          if (id.includes('@xyflow/react')) return 'reactflow';
+          if (id.includes('lucide-react')) return 'lucide';
+        },
+      },
+    },
+  },
 })

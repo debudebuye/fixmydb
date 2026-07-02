@@ -27,36 +27,31 @@ FixMyDB V1
    - Detect missing keys, duplicates, and naming issues
    - Identify scalability concerns
 
-2. **Schema Analysis Engine**
-   - Database Health Score (0-100)
-   - Detect missing keys, duplicates, and naming issues
-   - Identify scalability concerns
-
-3. **Normalization Review**
+4. **Normalization Review**
    - Analyze 1NF, 2NF, 3NF compliance
    - Suggest improved schemas
    - Explain every recommendation
 
-4. **Index Recommendation Engine**
+5. **Index Recommendation Engine**
    - Recommend indexes based on schema structure
    - Explain reasoning and expected benefits
 
-5. **Relationship Analysis**
+6. **Relationship Analysis**
    - Detect missing foreign keys
    - Identify circular dependencies
    - Analyze relationship integrity
 
-6. **ER Diagram Generator**
+7. **ER Diagram Generator**
    - Interactive visual diagrams
    - Zoom, pan, auto-layout
    - Display tables, columns, keys, relationships
 
-7. **SQL Generator**
+8. **SQL Generator**
    - Generate optimized SQL
    - Support PostgreSQL and MySQL
    - Copy-to-clipboard functionality
 
-8. **Results Dashboard**
+9. **Results Dashboard**
    - Tabbed interface: Overview, Normalization, Indexes, Relationships, ER Diagram, SQL Output
 
 ## Tech Stack

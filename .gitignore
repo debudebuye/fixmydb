@@ -28,6 +28,10 @@ Thumbs.db
 uploads/*
 !uploads/.gitkeep
 
+# Analytics data
+data/*
+!data/.gitkeep
+
 # Misc
 *.tgz
 .cache/
