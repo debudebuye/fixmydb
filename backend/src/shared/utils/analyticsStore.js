@@ -1,48 +1,60 @@
 const fs = require('fs');
 const path = require('path');
 
-const DATA_FILE = path.join(__dirname, '../../../data/analytics.json');
+const DB_PATH = path.join(__dirname, '../../../data/analytics.db');
+let db = null;
+let ready = null;
 
-function ensureDir() {
-  const dir = path.dirname(DATA_FILE);
+async function init() {
+  const initSqlJs = require('sql.js');
+  const SQL = await initSqlJs();
+
+  const dir = path.dirname(DB_PATH);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-}
 
-function read() {
-  try {
-    ensureDir();
-    if (!fs.existsSync(DATA_FILE)) return { devices: {}, totalAnalyses: 0 };
-    return JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
-  } catch {
-    return { devices: {}, totalAnalyses: 0 };
+  if (fs.existsSync(DB_PATH)) {
+    const buffer = fs.readFileSync(DB_PATH);
+    db = new SQL.Database(buffer);
+  } else {
+    db = new SQL.Database();
   }
+
+  db.run(`CREATE TABLE IF NOT EXISTS analyses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    device_id TEXT,
+    created_at TEXT NOT NULL
+  )`);
+
+  save();
 }
 
-function write(data) {
-  ensureDir();
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+function save() {
+  if (!db) return;
+  const data = db.export();
+  fs.writeFileSync(DB_PATH, Buffer.from(data));
 }
 
-function trackAnalysis(deviceId) {
-  const data = read();
-  if (deviceId && typeof deviceId === 'string' && deviceId.length > 5) {
-    const existing = data.devices[deviceId];
-    data.devices[deviceId] = {
-      firstSeen: existing?.firstSeen || new Date().toISOString(),
-      lastSeen: new Date().toISOString(),
-      count: (existing?.count || 0) + 1,
-    };
-  }
-  data.totalAnalyses = (data.totalAnalyses || 0) + 1;
-  write(data);
+ready = init();
+
+async function trackAnalysis(deviceId) {
+  await ready;
+  const now = new Date().toISOString();
+  db.run('INSERT INTO analyses (device_id, created_at) VALUES (?, ?)', [
+    deviceId && typeof deviceId === 'string' && deviceId.length > 5 ? deviceId : null,
+    now,
+  ]);
+  save();
 }
 
-function getStats() {
-  const data = read();
-  return {
-    totalUsers: Object.keys(data.devices).length,
-    totalSchemasProcessed: data.totalAnalyses || 0,
-  };
+async function getStats() {
+  await ready;
+  const usersResult = db.exec('SELECT COUNT(DISTINCT device_id) AS count FROM analyses WHERE device_id IS NOT NULL');
+  const totalResult = db.exec('SELECT COUNT(*) AS count FROM analyses');
+
+  const totalUsers = usersResult[0]?.values[0]?.[0] || 0;
+  const totalSchemasProcessed = totalResult[0]?.values[0]?.[0] || 0;
+
+  return { totalUsers, totalSchemasProcessed };
 }
 
 module.exports = { trackAnalysis, getStats };

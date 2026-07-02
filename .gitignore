@@ -13,6 +13,9 @@ dist/
 build/
 *.log
 
+# Test coverage
+coverage/
+
 # IDE
 .vscode/
 .idea/

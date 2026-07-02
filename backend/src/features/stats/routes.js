@@ -6,8 +6,8 @@ const { getStats } = require('../../shared/utils/analyticsStore');
  * GET /api/stats
  * Returns live analytics: total unique users and total schemas processed
  */
-router.get('/', (req, res) => {
-  const stats = getStats();
+router.get('/', async (req, res) => {
+  const stats = await getStats();
   res.json(stats);
 });
 
