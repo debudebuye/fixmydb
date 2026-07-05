@@ -4,11 +4,13 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
+const { exec } = require('child_process');
 
 const analyzeRoutes = require('./features/analyze/routes');
 const schemaRoutes = require('./features/schema/routes');
 const uploadRoutes = require('./features/upload/routes');
 const statsRoutes = require('./features/stats/routes');
+const historyRoutes = require('./features/history/routes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -50,6 +52,7 @@ app.use('/api/analyze', analyzeRoutes);
 app.use('/api/schema', schemaRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/history', historyRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -75,7 +78,15 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: err.message || 'Internal server error' });
 });
 
-app.listen(PORT, () => {
+const { initDatabase } = require('./database');
+
+const server = app.listen(PORT, async () => {
+  try {
+    await initDatabase();
+    console.log('📦 SQLite database initialized');
+  } catch (err) {
+    console.error('❌ Database init failed:', err.message);
+  }
   console.log(`🚀 FixMyDB API running on http://localhost:${PORT}`);
   console.log(`📊 Environment: ${process.env.NODE_ENV}`);
   if (process.env.OPENAI_API_KEY) {
@@ -83,6 +94,25 @@ app.listen(PORT, () => {
   } else {
     console.log('⚠️  No OpenAI API key - using local analysis engine');
   }
+  if (isProduction && process.env.AUTO_OPEN === 'true') {
+    const url = `http://localhost:${PORT}`;
+    const plat = process.platform;
+    if (plat === 'win32') {
+      exec(`start ${url}`);
+    } else if (plat === 'darwin') {
+      exec(`open ${url}`);
+    } else {
+      exec(`xdg-open ${url}`);
+    }
+  }
+});
+
+server.on('error', (err) => {
+  console.error(`❌ Server error: ${err.message}`);
+  if (err.code === 'EADDRINUSE') {
+    console.error(`   Port ${PORT} is already in use. Choose a different port.`);
+  }
+  process.exit(1);
 });
 
 module.exports = app;

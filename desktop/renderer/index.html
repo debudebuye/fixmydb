@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FixMyDB Desktop</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>FixMyDB</h1>
+      <p class="subtitle">Database Schema Analyzer — Desktop Control</p>
+    </div>
+
+    <div class="card ports">
+      <div class="field">
+        <label for="backend-port">Backend Port</label>
+        <input type="number" id="backend-port" value="5001" min="1024" max="65535" />
+      </div>
+      <div class="field">
+        <label for="frontend-port">Frontend Port</label>
+        <input type="number" id="frontend-port" value="3000" min="1024" max="65535" />
+      </div>
+    </div>
+
+    <div class="card status">
+      <div class="status-row">
+        <span class="dot" id="status-dot"></span>
+        <span id="status-text">Stopped</span>
+      </div>
+      <div class="url-row" id="url-row" style="display:none;">
+        <span class="label">Frontend URL:</span>
+        <a href="#" id="frontend-url" target="_blank"></a>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="btn-start" class="btn btn-start">Start</button>
+      <button id="btn-stop" class="btn btn-stop" disabled>Stop</button>
+    </div>
+
+    <div class="logs" id="logs"></div>
+  </div>
+  <script src="renderer.js"></script>
+</body>
+</html>

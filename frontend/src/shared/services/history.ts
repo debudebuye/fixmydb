@@ -1,5 +1,5 @@
-const STORAGE_KEY = 'fixmydb_history';
-const MAX_ENTRIES = 10;
+import api from './api';
+import type { AnalysisResult } from '../types/schema';
 
 export interface HistoryEntry {
   id: string;
@@ -10,36 +10,34 @@ export interface HistoryEntry {
   recommendationsCount: number;
   sqlPreview: string;
   dialect: string;
+  fullResult?: AnalysisResult;
 }
 
-export function getHistory(): HistoryEntry[] {
+export async function getHistory(): Promise<HistoryEntry[]> {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
+    const { data } = await api.get<HistoryEntry[]>('/history');
+    return data;
   } catch {
     return [];
   }
 }
 
-export function addToHistory(entry: Omit<HistoryEntry, 'id' | 'timestamp'>): void {
-  const history = getHistory();
-  history.unshift({
-    ...entry,
-    id: Date.now().toString(36),
-    timestamp: new Date().toISOString(),
-  });
-  if (history.length > MAX_ENTRIES) history.length = MAX_ENTRIES;
+export async function addToHistory(entry: Omit<HistoryEntry, 'id' | 'timestamp'> & { fullResult?: AnalysisResult }): Promise<void> {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+    await api.post('/history', {
+      ...entry,
+      id: Date.now().toString(36),
+      timestamp: new Date().toISOString(),
+    });
   } catch {
-    // storage full or unavailable
+    // offline fallback
   }
 }
 
-export function clearHistory(): void {
+export async function clearHistory(): Promise<void> {
   try {
-    localStorage.removeItem(STORAGE_KEY);
+    await api.delete('/history');
   } catch {
-    // ignore
+    // offline fallback
   }
 }

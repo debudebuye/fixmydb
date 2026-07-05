@@ -1,0 +1,86 @@
+{
+  "name": "fixmydb-desktop",
+  "version": "1.0.0",
+  "description": "FixMyDB Desktop Control Panel",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build-frontend": "cd ../frontend && npm run build",
+    "prune-backend": "cd ../backend && npm prune --production",
+    "predist": "npm run build-frontend && npm run prune-backend",
+    "dist": "electron-builder",
+    "predist:win": "npm run build-frontend && npm run prune-backend",
+    "dist:win": "electron-builder --win",
+    "predist:mac": "npm run build-frontend && npm run prune-backend",
+    "dist:mac": "electron-builder --mac",
+    "predist:linux": "npm run build-frontend && npm run prune-backend",
+    "dist:linux": "electron-builder --linux",
+    "predist:all": "npm run build-frontend && npm run prune-backend",
+    "dist:all": "electron-builder --win --mac --linux"
+  },
+  "build": {
+    "appId": "com.fixmydb.desktop",
+    "productName": "FixMyDB",
+    "directories": {
+      "output": "dist",
+      "buildResources": "icons"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "../backend",
+        "to": "backend",
+        "filter": [
+          "**/*",
+          "!node_modules/.cache/**"
+        ]
+      },
+      {
+        "from": "../frontend/dist",
+        "to": "frontend",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "scripts",
+        "to": "scripts",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "./icons/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "runAfterFinish": true
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "icon": "./icons/icon.icns"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "./icons/icon.png"
+    }
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.0",
+    "sharp": "^0.35.3"
+  }
+}

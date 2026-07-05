@@ -32,6 +32,10 @@ uploads/*
 data/*
 !data/.gitkeep
 
+# Desktop app build
+desktop/dist/
+desktop/out/
+
 # Misc
 *.tgz
 .cache/
