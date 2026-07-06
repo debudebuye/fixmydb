@@ -18,8 +18,8 @@ const options = {
       '/': {
         get: {
           tags: ['Info'],
-          summary: 'API root info',
-          description: 'Returns a user-friendly overview of the API with available endpoints.',
+          summary: 'API root',
+          description: 'Returns basic API information and links to documentation and health check.',
           responses: {
             200: {
               description: 'API information',
@@ -28,13 +28,12 @@ const options = {
                   schema: {
                     type: 'object',
                     properties: {
-                      name: { type: 'string', example: 'FixMyDB API' },
+                      service: { type: 'string', example: 'FixMyDB API' },
                       version: { type: 'string', example: '1.0.0' },
                       description: { type: 'string' },
-                      docs: { type: 'string', example: '/api/docs' },
+                      documentation: { type: 'string', example: '/api/docs' },
                       health: { type: 'string', example: '/api/health' },
-                      endpoints: { type: 'object' },
-                      repository: { type: 'string' },
+                      source: { type: 'string' },
                     },
                   },
                 },

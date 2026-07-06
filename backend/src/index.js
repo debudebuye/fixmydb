@@ -66,22 +66,12 @@ app.use('/api/history', historyRoutes);
 // Root info
 app.get('/', (req, res) => {
   res.json({
-    name: 'FixMyDB API',
+    service: 'FixMyDB API',
     version: '1.0.0',
     description: 'AI-powered database schema reviewer',
-    docs: '/api/docs',
+    documentation: '/api/docs',
     health: '/api/health',
-    endpoints: {
-      analyze: { path: '/api/analyze', method: 'POST', description: 'Analyze a SQL schema' },
-      examples: { path: '/api/schema/examples', method: 'GET', description: 'Get example schemas' },
-      upload: { path: '/api/upload', method: 'POST', description: 'Upload a schema file' },
-      stats: { path: '/api/stats', method: 'GET', description: 'Get live analytics' },
-      history: { path: '/api/history', method: 'GET', description: 'List analysis history' },
-      historyDetail: { path: '/api/history/:id', method: 'GET', description: 'Get a history entry' },
-      historyCreate: { path: '/api/history', method: 'POST', description: 'Save to history' },
-      historyClear: { path: '/api/history', method: 'DELETE', description: 'Clear all history' },
-    },
-    repository: 'https://github.com/debudebuye/fixmydb',
+    source: 'https://github.com/debudebuye/fixmydb',
   });
 });
 
