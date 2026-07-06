@@ -37,9 +37,16 @@ export const checkHealth = async () => {
   return response.data;
 };
 
+export interface RecentAnalysis {
+  analysesId: string;
+  deviceId: string | null;
+  createdAt: string;
+}
+
 export interface LiveStats {
   totalUsers: number;
   totalSchemasProcessed: number;
+  recentAnalyses: RecentAnalysis[];
 }
 
 export const fetchStats = async (): Promise<LiveStats> => {

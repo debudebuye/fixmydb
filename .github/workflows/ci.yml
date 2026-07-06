@@ -49,11 +49,9 @@ jobs:
 
       - run: npm install
 
-      - name: Lint placeholder
-        run: echo "No linter configured for backend"
+      - run: npm run lint
 
-      - name: Test placeholder
-        run: echo "No tests configured for backend"
+      - run: npm run test
 
   docker:
     name: Docker Build
