@@ -13,6 +13,7 @@ export default function Layout({ children }: LayoutProps) {
   const [mobileMenu, setMobileMenu] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMobileMenu(false);
   }, [location.pathname]);
 
