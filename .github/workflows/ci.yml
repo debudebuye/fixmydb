@@ -111,7 +111,14 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: desktop-${{ runner.os }}
-          path: desktop/dist/
+          path: |
+            desktop/dist/*.AppImage
+            desktop/dist/*.deb
+            desktop/dist/*.exe
+            desktop/dist/*.dmg
+            desktop/dist/*.zip
+            desktop/dist/*.blockmap
+            desktop/dist/builder-debug.yml
 
   release:
     name: GitHub Release
@@ -154,6 +161,11 @@ jobs:
             - **Windows**: NSIS installer
             - **macOS**: DMG & ZIP
           files: |
-            artifacts/**/*
+            artifacts/**/*.AppImage
+            artifacts/**/*.deb
+            artifacts/**/*.exe
+            artifacts/**/*.dmg
+            artifacts/**/*.zip
+            artifacts/**/*.blockmap
           draft: false
           prerelease: false
