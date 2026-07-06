@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Database, GitFork, Moon, Sun, Zap, Shield, Sparkles, WifiOff, Heart, Copy, Check, Menu, X } from 'lucide-react';
+import { Database, GitFork, Moon, Sun, Zap, Shield, Sparkles, WifiOff, Heart, Copy, Check, Menu, X, Download } from 'lucide-react';
 import { useTheme } from '../theme';
 
 interface LayoutProps { children: React.ReactNode; }
@@ -104,6 +104,18 @@ export default function Layout({ children }: LayoutProps) {
               );
             })}
             <div style={{ width: 1, height: 18, background: 'var(--border)', margin: '0 8px' }} />
+            <a href="https://github.com/debudebuye/fixmydb/releases"
+              target="_blank" rel="noopener noreferrer"
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                padding: '5px 12px', borderRadius: 7, fontSize: 13, fontWeight: 500,
+                color: '#7c6af7', textDecoration: 'none',
+                border: '1px solid rgba(124,106,247,0.3)', background: 'rgba(124,106,247,0.08)',
+                transition: 'all 0.15s',
+              }}>
+              <Download size={13} />
+              Download
+            </a>
             <button
               onClick={toggleTheme}
               aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
@@ -221,6 +233,19 @@ export default function Layout({ children }: LayoutProps) {
           {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
         </button>
 
+        <a href="https://github.com/debudebuye/fixmydb/releases"
+          target="_blank" rel="noopener noreferrer"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 10,
+            padding: '10px 12px', borderRadius: 7, fontSize: 14, fontWeight: 500,
+            color: '#7c6af7', textDecoration: 'none',
+            background: 'rgba(124,106,247,0.06)', border: '1px solid rgba(124,106,247,0.15)',
+            transition: 'all 0.15s',
+          }}>
+          <Download size={15} />
+          Download Desktop App
+        </a>
+
         <a href="https://github.com/debudebuye/fixmydb"
           target="_blank" rel="noopener noreferrer"
           style={{
@@ -251,6 +276,19 @@ export default function Layout({ children }: LayoutProps) {
           </span>
         </div>
         <p style={{ fontSize: 11, color: 'var(--text-soft)' }}>Like ESLint — but for database architecture.</p>
+        <div style={{ marginTop: 10 }}>
+          <a href="https://github.com/debudebuye/fixmydb/releases"
+            target="_blank" rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 5,
+              fontSize: 11, color: '#7c6af7', fontWeight: 500, textDecoration: 'none',
+              padding: '4px 10px', borderRadius: 5,
+              background: 'rgba(124,106,247,0.06)', border: '1px solid rgba(124,106,247,0.15)',
+            }}>
+            <Download size={11} />
+            Download Desktop App
+          </a>
+        </div>
         {import.meta.env.VITE_BINANCE_ID && (
           <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--border-subtle)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 4 }}>

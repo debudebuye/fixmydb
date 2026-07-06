@@ -31,6 +31,11 @@ jobs:
 
       - run: npm run build
 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+
   backend:
     name: Backend
     runs-on: ubuntu-latest
@@ -62,3 +67,93 @@ jobs:
       - uses: actions/checkout@v4
 
       - run: docker compose build
+
+  desktop:
+    name: Desktop (${{ matrix.os }})
+    needs: [frontend]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    defaults:
+      run:
+        working-directory: desktop
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: desktop/package.json
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+
+      - run: npm install
+
+      - name: Build for Linux
+        if: runner.os == 'Linux'
+        run: npm run dist:linux
+
+      - name: Build for Windows
+        if: runner.os == 'Windows'
+        run: npm run dist:win
+
+      - name: Build for macOS
+        if: runner.os == 'macOS'
+        run: npm run dist:mac
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desktop-${{ runner.os }}
+          path: desktop/dist/
+
+  release:
+    name: GitHub Release
+    if: github.event_name == 'push' && github.ref_name == 'main'
+    needs: [desktop]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: desktop-Linux
+          path: artifacts/linux
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: desktop-Windows
+          path: artifacts/windows
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: desktop-macOS
+          path: artifacts/macos
+
+      - name: Generate release tag
+        run: echo "RELEASE_TAG=v$(date +'%Y%m%d.%H%M%S')" >> $GITHUB_ENV
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: FixMyDB Desktop ${{ env.RELEASE_TAG }}
+          body: |
+            Automated desktop build from main branch.
+
+            ## Downloads
+            - **Linux**: AppImage & deb packages
+            - **Windows**: NSIS installer
+            - **macOS**: DMG & ZIP
+          files: |
+            artifacts/**/*
+          draft: false
+          prerelease: false

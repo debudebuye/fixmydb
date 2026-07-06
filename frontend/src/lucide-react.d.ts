@@ -30,10 +30,13 @@ declare module 'lucide-react' {
   export const KeyRound: Icon
   export const LayoutDashboard: Icon
   export const Lightbulb: Icon
-  export const Lock: Icon
   export const Loader2: Icon
+  export const Lock: Icon
+  export const Menu: Icon
+  export const Monitor: Icon
   export const Moon: Icon
   export const Network: Icon
+  export const Package: Icon
   export const Play: Icon
   export const RefreshCw: Icon
   export const RotateCcw: Icon
@@ -48,6 +51,7 @@ declare module 'lucide-react' {
   export const Upload: Icon
   export const Users: Icon
   export const WifiOff: Icon
+  export const X: Icon
   export const XCircle: Icon
   export const Zap: Icon
 }
