@@ -332,6 +332,7 @@ function manualParseCreateTable(stmt) {
   const primaryKeys = [];
   const foreignKeys = [];
   const indexes = [];
+  const checks = [];
 
   // Extract the content between the outermost parens
   const contentMatch = stmt.match(/\((.+)\)/s);

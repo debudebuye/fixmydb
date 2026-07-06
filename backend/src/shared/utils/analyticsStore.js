@@ -1,48 +1,57 @@
-const fs = require('fs');
-const path = require('path');
+const { Pool } = require('pg');
+const { v4: uuidv4 } = require('uuid');
 
-const DATA_FILE = path.join(__dirname, '../../../data/analytics.json');
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/fixmydb',
+});
 
-function ensureDir() {
-  const dir = path.dirname(DATA_FILE);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-}
-
-function read() {
+async function init() {
+  const client = await pool.connect();
   try {
-    ensureDir();
-    if (!fs.existsSync(DATA_FILE)) return { devices: {}, totalAnalyses: 0 };
-    return JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
-  } catch {
-    return { devices: {}, totalAnalyses: 0 };
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS analyses (
+        id SERIAL PRIMARY KEY,
+        analyses_id TEXT NOT NULL UNIQUE,
+        device_id TEXT,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )
+    `);
+    console.log('✅ Database connected and schema ensured');
+  } finally {
+    client.release();
   }
 }
 
-function write(data) {
-  ensureDir();
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+async function trackAnalysis(deviceId) {
+  const analysesId = uuidv4();
+  const cleanDeviceId = deviceId && typeof deviceId === 'string' && deviceId.length > 5 ? deviceId : null;
+  await pool.query(
+    'INSERT INTO analyses (analyses_id, device_id, created_at) VALUES ($1, $2, NOW())',
+    [analysesId, cleanDeviceId]
+  );
+  return analysesId;
 }
 
-function trackAnalysis(deviceId) {
-  const data = read();
-  if (deviceId && typeof deviceId === 'string' && deviceId.length > 5) {
-    const existing = data.devices[deviceId];
-    data.devices[deviceId] = {
-      firstSeen: existing?.firstSeen || new Date().toISOString(),
-      lastSeen: new Date().toISOString(),
-      count: (existing?.count || 0) + 1,
-    };
-  }
-  data.totalAnalyses = (data.totalAnalyses || 0) + 1;
-  write(data);
-}
+async function getStats() {
+  const usersResult = await pool.query('SELECT COUNT(DISTINCT device_id) AS count FROM analyses WHERE device_id IS NOT NULL');
+  const totalResult = await pool.query('SELECT COUNT(*) AS count FROM analyses');
+  const recentResult = await pool.query(
+    'SELECT analyses_id, device_id, created_at FROM analyses ORDER BY created_at DESC'
+  );
 
-function getStats() {
-  const data = read();
   return {
-    totalUsers: Object.keys(data.devices).length,
-    totalSchemasProcessed: data.totalAnalyses || 0,
+    totalUsers: parseInt(usersResult.rows[0]?.count) || 0,
+    totalSchemasProcessed: parseInt(totalResult.rows[0]?.count) || 0,
+    recentAnalyses: recentResult.rows.map(row => ({
+      analysesId: row.analyses_id,
+      deviceId: row.device_id,
+      createdAt: row.created_at,
+    })),
   };
 }
+
+init().catch(err => {
+  console.error('❌ Database connection failed:', err.message);
+});
 
 module.exports = { trackAnalysis, getStats };

@@ -61,7 +61,7 @@ router.post('/', async (req, res) => {
     }
 
     // Track analytics (fire-and-forget)
-    try { trackAnalysis(deviceId); } catch { /* non-blocking */ }
+    trackAnalysis(deviceId).catch(() => {});
 
     const result = {
       meta: {
