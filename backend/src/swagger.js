@@ -15,6 +15,59 @@ const options = {
       { url: '/', description: 'Production server' },
     ],
     paths: {
+      '/': {
+        get: {
+          tags: ['Info'],
+          summary: 'API root info',
+          description: 'Returns a user-friendly overview of the API with available endpoints.',
+          responses: {
+            200: {
+              description: 'API information',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      name: { type: 'string', example: 'FixMyDB API' },
+                      version: { type: 'string', example: '1.0.0' },
+                      description: { type: 'string' },
+                      docs: { type: 'string', example: '/api/docs' },
+                      health: { type: 'string', example: '/api/health' },
+                      endpoints: { type: 'object' },
+                      repository: { type: 'string' },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      '/health': {
+        get: {
+          tags: ['Health'],
+          summary: 'Health check (root)',
+          description: 'Simple health check endpoint available at root level.',
+          responses: {
+            200: {
+              description: 'API is healthy',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      status: { type: 'string', example: 'ok' },
+                      version: { type: 'string', example: '1.0.0' },
+                      service: { type: 'string', example: 'FixMyDB API' },
+                      uptime: { type: 'number' },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
       '/api/health': {
         get: {
           tags: ['Health'],
