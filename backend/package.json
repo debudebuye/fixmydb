@@ -31,6 +31,8 @@
     "openai": "^4.52.7",
     "pg": "^8.22.0",
     "sql.js": "^1.14.1",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
