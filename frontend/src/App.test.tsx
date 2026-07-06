@@ -8,6 +8,6 @@ describe('App', () => {
     root.id = 'root'
     document.body.appendChild(root)
     render(<App />, { container: root })
-    expect(screen.getByText(/FixMyDB/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/FixMyDB/i).length).toBeGreaterThan(0)
   })
 })
