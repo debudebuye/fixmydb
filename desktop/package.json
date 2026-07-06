@@ -2,6 +2,8 @@
   "name": "fixmydb-desktop",
   "version": "1.0.0",
   "description": "FixMyDB Desktop Control Panel",
+  "author": "FixMyDB <debudebuye@users.noreply.github.com>",
+  "homepage": "https://github.com/debudebuye/fixmydb",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -75,7 +77,9 @@
         "AppImage",
         "deb"
       ],
-      "icon": "./icons/icon.png"
+      "icon": "./icons/icon.png",
+      "maintainer": "FixMyDB <debudebuye@users.noreply.github.com>",
+      "category": "Development"
     }
   },
   "devDependencies": {
