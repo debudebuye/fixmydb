@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Zap, Heart, Copy, Check, Download } from 'lucide-react';
+import { Zap, Coffee, Copy, Check, Download } from 'lucide-react';
 
 export default function Footer() {
   const [copied, setCopied] = useState(false);
@@ -37,7 +37,7 @@ export default function Footer() {
       {import.meta.env.VITE_BINANCE_ID && (
         <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--border-subtle)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 4 }}>
-            <Heart size={12} color="#f43f5e" />
+            <Coffee size={12} color="#f43f5e" />
             <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Support FixMyDB</span>
           </div>
           <p style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 6, maxWidth: 400, marginLeft: 'auto', marginRight: 'auto' }}>
