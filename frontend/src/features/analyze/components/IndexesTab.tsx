@@ -5,12 +5,12 @@ import type { Recommendation } from '../../../shared/types/schema';
 export default function IndexesTab({ recommendations }: { recommendations: Recommendation[] }) {
   const [copied, setCopied] = useState<number | null>(null);
 
-  const copy = (sql: string, i: number) => {
-    navigator.clipboard.writeText(sql);
+  const copy = async (sql: string, i: number) => {
+    try { await navigator.clipboard.writeText(sql); } catch { /* clipboard denied */ }
     setCopied(i); setTimeout(() => setCopied(null), 2000);
   };
-  const copyAll = () => {
-    navigator.clipboard.writeText(recommendations.map(r => r.sql).join('\n'));
+  const copyAll = async () => {
+    try { await navigator.clipboard.writeText(recommendations.map(r => r.sql).join('\n')); } catch { /* clipboard denied */ }
     setCopied(-1); setTimeout(() => setCopied(null), 2000);
   };
 

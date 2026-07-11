@@ -65,7 +65,12 @@ export default function AnalyzePage() {
       });
       setTimeout(() => document.getElementById('results')?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Analysis failed';
+      const raw = err instanceof Error ? err.message : '';
+      const message = raw.includes('ECONNREFUSED') || raw.includes('Network Error')
+        ? 'Cannot reach the server. Please check your connection and try again.'
+        : raw.includes('timeout')
+          ? 'Request timed out. The server may be busy — please try again.'
+          : 'Something went wrong. Please try again.';
       setError(message);
       setIsLoading(false);
     }
@@ -74,9 +79,8 @@ export default function AnalyzePage() {
   const handleUpload = async (files: File[]) => {
     setIsLoading(true); setError(null);
     try { const d = await uploadSchemaFile(files); setSql(d.sql); setIsLoading(false); }
-    catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Upload failed';
-      setError(message);
+    catch {
+      setError('Failed to upload file. Please check the file and try again.');
       setIsLoading(false);
     }
   };
@@ -171,7 +175,7 @@ export default function AnalyzePage() {
                     ) : result.meta.aiError.startsWith('404') ? (
                       <>Model not found on this provider. <Link to="/settings" style={{ color: '#f59e0b', fontWeight: 600 }}>Check your AI provider configuration</Link> and select a valid model.</>
                     ) : (
-                      <>{result.meta.aiError}. <Link to="/settings" style={{ color: '#f59e0b', fontWeight: 600 }}>Check your AI provider configuration</Link>. Analysis results are still available without AI insights.</>
+                      <>AI enhancement failed. <Link to="/settings" style={{ color: '#f59e0b', fontWeight: 600 }}>Check your AI provider configuration</Link>. Analysis results are still available without AI insights.</>
                     )}
                   </div>
                 </div>

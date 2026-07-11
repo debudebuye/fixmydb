@@ -9,7 +9,7 @@ export default function SQLOutputTab({ sql }: { sql: string }) {
   const [copied, setCopied] = useState(false);
 
   const { theme } = useTheme();
-  const copy = () => { navigator.clipboard.writeText(sql); setCopied(true); setTimeout(() => setCopied(false), 2000); };
+  const copy = async () => { try { await navigator.clipboard.writeText(sql); } catch { /* clipboard denied */ } setCopied(true); setTimeout(() => setCopied(false), 2000); };
   const download = () => {
     const a = Object.assign(document.createElement('a'), {
       href: URL.createObjectURL(new Blob([sql], { type: 'text/plain' })),
