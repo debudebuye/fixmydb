@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
     const all = await db.getHistory();
     const total = all.length;
     const summary = all
-      .map(({ fullResult, ...rest }) => rest)
+      .map(({ fullResult: _fullResult, ...rest }) => rest)
       .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
       .slice(offset, offset + limit);
 

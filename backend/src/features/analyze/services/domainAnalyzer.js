@@ -194,7 +194,6 @@ function applyEcommerceRules(tables) {
   const orderTables = tables.filter(t => /order|cart|checkout/.test(t.name.toLowerCase()));
 
   for (const table of orderTables) {
-    const cols = table.columns.map(c => c.name.toLowerCase());
     const hasOrderItems = tables.some(t => t.name.toLowerCase().includes('order_item') || t.name.toLowerCase().includes('order_line'));
 
     findings.push({

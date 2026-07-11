@@ -4,7 +4,6 @@ const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const { sendSuccess, sendError } = require('../../shared/middleware/response');
-const logger = require('../../shared/utils/logger');
 
 const router = express.Router();
 
@@ -70,10 +69,10 @@ router.post('/', upload.array('files', 10), async (req, res) => {
           sql: buf.toString('utf-8'),
         });
       }
-    } catch (err) {
+    } catch {
       errors.push({ filename: file.originalname, error: 'Failed to read file' });
     } finally {
-      try { fs.unlinkSync(file.path); } catch {}
+      try { fs.unlinkSync(file.path); } catch { /* already cleaned up */ }
     }
   }
 

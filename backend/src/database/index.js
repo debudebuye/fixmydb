@@ -39,7 +39,7 @@ async function initSqlite() {
     deviceId TEXT
   )`);
   db.run('CREATE INDEX IF NOT EXISTS idx_history_timestamp ON history(timestamp DESC)');
-  saveSqlite();
+  saveSqliteImmediate();
 }
 
 function scheduleSave() {
@@ -78,7 +78,7 @@ async function getHistorySupabase() {
 
   return (data || []).map(row => {
     if (row.fullResult && typeof row.fullResult === 'string') {
-      try { row.fullResult = JSON.parse(row.fullResult); } catch {}
+      try { row.fullResult = JSON.parse(row.fullResult); } catch { /* ignore malformed JSON */ }
     }
     return row;
   });
@@ -126,7 +126,7 @@ async function getHistory() {
     cols.forEach((c, i) => {
       obj[c] = row[i];
       if (c === 'fullResult' && row[i]) {
-        try { obj[c] = JSON.parse(row[i]); } catch {}
+        try { obj[c] = JSON.parse(row[i]); } catch { /* ignore malformed JSON */ }
       }
     });
     return obj;

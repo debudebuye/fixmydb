@@ -11,7 +11,6 @@ function analyzeNormalization(schema, tablePatterns = {}, options = {}) {
   for (const table of tables) {
     const tableName = table.name;
     const patternTags = tablePatterns[tableName] || [];
-    const columnNames = table.columns.map(c => c.name.toLowerCase());
 
     // 1NF: Check for atomic values (detect array-like column names or JSON types)
     for (const column of table.columns) {
@@ -141,15 +140,6 @@ function shouldIgnoreNonAtomic(column, patternTags, mode) {
   if (mode !== 'crud' && colType === 'TEXT' && colName.includes('payload')) return true;
 
   return false;
-}
-
-function shouldIgnoreEmbeddedData(tableName, patternTags, prefix) {
-  if (patternTags.includes('event_outbox') || patternTags.includes('audit_log') || patternTags.includes('financial_ledger') || patternTags.includes('betting_domain')) {
-    return true;
-  }
-
-  const allowedPrefixes = new Set(['aggregate', 'reference', 'payload', 'event', 'transaction', 'bet', 'market']);
-  return allowedPrefixes.has(prefix) && patternTags.length > 0;
 }
 
 module.exports = { analyzeNormalization };

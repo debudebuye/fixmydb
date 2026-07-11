@@ -19,7 +19,7 @@ function parseSQLSchema(sql) {
       if (table) {
         tables.push(table);
       }
-    } catch (err) {
+    } catch {
       const table = manualParseCreateTable(stmt);
       if (table) tables.push(table);
     }
@@ -238,7 +238,7 @@ function parseCreateTable(stmt) {
       checks,
       constraints,
     };
-  } catch (err) {
+  } catch {
     return null;
   }
 }

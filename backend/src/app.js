@@ -150,7 +150,7 @@ app.use((req, res) => {
 });
 
 // ── Global error handler ──
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
   logger.error('Unhandled error', { err: err.message, stack: err.stack, requestId: res.locals.requestId });
   sendError(res, 500, 'INTERNAL_ERROR', isProduction ? 'Internal server error' : err.message);
 });
