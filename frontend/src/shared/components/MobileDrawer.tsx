@@ -21,7 +21,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
 
   useEffect(() => {
     onClose();
-  }, [location.pathname]);
+  }, [location.pathname, onClose]);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : '';

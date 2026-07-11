@@ -1,4 +1,4 @@
-import axios, { type AxiosRequestConfig } from 'axios';
+import axios from 'axios';
 import type { AnalysisResult, ExampleSchema } from '../types/schema';
 
 // ── Axios client ──
@@ -7,30 +7,44 @@ const api = axios.create({
   timeout: 120000,
 });
 
+// ── Typed error extensions ──
+interface ApiError extends Error {
+  code?: string;
+  details?: unknown;
+  requestId?: string;
+}
+
+interface ApiErrorResponse {
+  error?: { message?: string; code?: string; details?: unknown };
+  meta?: { requestId?: string };
+}
+
 // ── Response interceptor: unwrap { success, data, error, meta } envelope ──
 api.interceptors.response.use(
   (res) => {
     const body = res.data;
     if (body && typeof body === 'object' && 'success' in body) {
       if (!body.success && body.error) {
-        const err = new Error(body.error.message || 'Request failed');
-        (err as any).code = body.error.code;
-        (err as any).details = body.error.details;
-        (err as any).requestId = body.meta?.requestId;
+        const err: ApiError = new Error(body.error.message || 'Request failed');
+        err.code = body.error.code;
+        err.details = body.error.details;
+        err.requestId = body.meta?.requestId;
         return Promise.reject(err);
       }
       res.data = body.data;
-      (res as any).meta = body.meta;
+      (res as { meta?: ApiErrorResponse['meta'] }).meta = body.meta;
     }
     return res;
   },
   (error) => {
-    if (error.response?.data && typeof error.response.data === 'object' && 'error' in error.response.data) {
-      const apiErr = error.response.data.error;
+    const data = error.response?.data as ApiErrorResponse | undefined;
+    if (data && typeof data === 'object' && data.error) {
+      const apiErr = data.error;
       error.message = apiErr.message || error.message;
-      (error as any).code = apiErr.code;
-      (error as any).details = apiErr.details;
-      (error as any).requestId = error.response.data.meta?.requestId;
+      const apiError = error as ApiError;
+      apiError.code = apiErr.code;
+      apiError.details = apiErr.details;
+      apiError.requestId = data.meta?.requestId;
     }
     return Promise.reject(error);
   },
@@ -38,13 +52,13 @@ api.interceptors.response.use(
 
 // ── Retry helper with exponential backoff ──
 async function withRetry<T>(fn: () => Promise<T>, retries = 2, baseDelay = 500): Promise<T> {
-  let lastError: any;
+  let lastError: Error | undefined;
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
       return await fn();
-    } catch (err: any) {
-      lastError = err;
-      const status = err.response?.status;
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+      const status = (err as { response?: { status?: number } }).response?.status;
       if (status && status >= 400 && status < 500 && status !== 429) throw err;
       if (attempt < retries) {
         await new Promise(r => setTimeout(r, baseDelay * Math.pow(2, attempt)));

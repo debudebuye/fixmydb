@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { fetchStats } from '../../shared/services/api';
 import type { LiveStats } from '../../shared/services/api';
 import HeroSection from './HeroSection';
