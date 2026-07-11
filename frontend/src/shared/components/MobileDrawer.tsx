@@ -21,7 +21,8 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
 
   useEffect(() => {
     onClose();
-  }, [location.pathname, onClose]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : '';
