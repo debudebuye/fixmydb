@@ -109,7 +109,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
         </a>
         <p style={{ fontSize: 10, color: 'var(--text-faint)', padding: '0 12px', display: 'flex', alignItems: 'center', gap: 4 }}>
           <ShieldAlert size={10} />
-          Windows: click "More info" → "Run anyway" if SmartScreen warning appears
+          Windows: "More info" → "Run anyway" · macOS: right-click → Open
         </p>
 
         <a href="https://github.com/debudebuye/fixmydb"

@@ -36,6 +36,7 @@
 - Custom app icon, embedded backend + frontend
 - Works offline with local SQLite database
 - **Windows:** If SmartScreen warns "Windows protected your PC", click **"More info"** → **"Run anyway"**. The app is open source and safe to run.
+- **macOS:** If Gatekeeper blocks the app, right-click the app → **Open**, or go to System Preferences → Privacy & Security → **"Open Anyway"**.
 
 ### Production Features
 - **API versioning** — `/api/v1/*` with backward-compatible redirects

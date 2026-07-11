@@ -35,7 +35,7 @@ export default function Footer() {
         </a>
         <p style={{ fontSize: 10, color: 'var(--text-faint)', marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 3 }}>
           <ShieldAlert size={10} />
-          Windows: click "More info" → "Run anyway" if SmartScreen warning appears
+          Windows: "More info" → "Run anyway" · macOS: right-click → Open
         </p>
       </div>
       {import.meta.env.VITE_BINANCE_ID && (
