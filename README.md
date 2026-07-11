@@ -35,6 +35,7 @@
 - Electron-based desktop application
 - Custom app icon, embedded backend + frontend
 - Works offline with local SQLite database
+- **Windows:** If SmartScreen warns "Windows protected your PC", click **"More info"** → **"Run anyway"**. The app is open source and safe to run.
 
 ### Production Features
 - **API versioning** — `/api/v1/*` with backward-compatible redirects

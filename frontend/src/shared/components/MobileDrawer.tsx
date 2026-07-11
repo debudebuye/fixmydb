@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Database, Zap, Sparkles, Shield, Sun, Moon, Download, GitFork, X } from 'lucide-react';
+import { Database, Zap, Sparkles, Shield, Sun, Moon, Download, GitFork, X, ShieldAlert } from 'lucide-react';
 import { useTheme } from '../theme';
 
 interface MobileDrawerProps {
@@ -107,6 +107,10 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
           <Download size={15} />
           Download Desktop App
         </a>
+        <p style={{ fontSize: 10, color: 'var(--text-faint)', padding: '0 12px', display: 'flex', alignItems: 'center', gap: 4 }}>
+          <ShieldAlert size={10} />
+          Windows: click "More info" → "Run anyway" if SmartScreen warning appears
+        </p>
 
         <a href="https://github.com/debudebuye/fixmydb"
           target="_blank" rel="noopener noreferrer"
