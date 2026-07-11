@@ -68,11 +68,11 @@ app.use('/', generalLimiter);
 // ── CORS ──
 const allowedOrigins = (process.env.FRONTEND_URL || '')
   .split(',')
-  .map(s => s.trim())
+  .map(s => s.trim().replace(/\/+$/, ''))
   .filter(Boolean);
 app.use(cors({
   origin: (origin, cb) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(origin.replace(/\/+$/, ''))) {
       cb(null, true);
     } else {
       cb(new Error('Not allowed by CORS'));
