@@ -4,9 +4,8 @@ package-lock.json
 yarn.lock
 
 # Environment
-.env
-.env.local
-.env.*.local
+.env*
+!.env.example
 
 # Build outputs
 dist/
@@ -31,13 +30,17 @@ Thumbs.db
 uploads/*
 !uploads/.gitkeep
 
-# Analytics data
-data/*
-!data/.gitkeep
+# Analytics data (local SQLite database)
+backend/data/*
+!backend/data/.gitkeep
 
 # Desktop app build
 desktop/dist/
 desktop/out/
+
+# Tracked log files (should not accumulate sensitive data)
+backend/stderr.txt
+backend/stdout.txt
 
 # Misc
 *.tgz

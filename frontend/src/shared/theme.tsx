@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
+/** Application color scheme — persisted to localStorage, respects system preference on first visit. */
 type Theme = 'dark' | 'light';
 
 interface ThemeContextValue {

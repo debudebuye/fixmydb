@@ -11,7 +11,7 @@ const options = {
       contact: { name: 'GitHub', url: 'https://github.com/debudebuye/fixmydb' },
     },
     servers: [
-      { url: 'http://localhost:5000', description: 'Development server' },
+      { url: process.env.BACKEND_URL, description: 'Development server' },
       { url: '/', description: 'Production server' },
     ],
     paths: {

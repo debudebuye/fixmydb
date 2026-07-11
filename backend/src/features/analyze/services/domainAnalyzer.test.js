@@ -53,7 +53,7 @@ describe('analyzeDomain', () => {
       ],
     };
 
-    const result = analyzeDomain(schema, { wallets: ['financial_ledger'] });
+    const result = analyzeDomain(schema);
     const rules = result.domainRules.flat();
     const balanceRule = rules.find(r => r.rule === 'mutable_balance_model');
     expect(balanceRule).toBeDefined();

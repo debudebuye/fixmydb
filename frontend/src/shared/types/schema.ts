@@ -1,3 +1,4 @@
+/** A single table column parsed from a CREATE TABLE statement. */
 export interface Column {
   name: string;
   type: string;
@@ -8,6 +9,7 @@ export interface Column {
   references: { table: string; column: string } | null;
 }
 
+/** A parsed database table with its columns, keys, and indexes. */
 export interface Table {
   name: string;
   columns: Column[];
@@ -16,6 +18,7 @@ export interface Table {
   indexes: { columns: string[]; type: string }[];
 }
 
+/** A foreign-key relationship between two tables. */
 export interface Relationship {
   from: string;
   fromColumn: string;
@@ -24,6 +27,7 @@ export interface Relationship {
   type: string;
 }
 
+/** A detected schema problem with severity level and optional recommendation. */
 export interface Issue {
   severity: 'high' | 'medium' | 'low';
   type: string;
@@ -33,6 +37,7 @@ export interface Issue {
   recommendation?: string;
 }
 
+/** A suggested schema fix with generated SQL and expected benefit. */
 export interface Recommendation {
   type: string;
   table: string;
@@ -42,6 +47,7 @@ export interface Recommendation {
   benefit: string;
 }
 
+/** A detected normalization violation with its form (1NF/2NF/3NF) and explanation. */
 export interface NormalizationViolation {
   table: string;
   column?: string;
@@ -52,12 +58,14 @@ export interface NormalizationViolation {
   columns?: string[];
 }
 
+/** Full normalization report — overall score plus per-table violations. */
 export interface NormalizationAnalysis {
   normalizationScore: number;
   violations: NormalizationViolation[];
   suggestions: { table: string; normalForm: string; message: string; suggestion: string }[];
 }
 
+/** A table node in the ER diagram, positioned with its columns and keys. */
 export interface ERNode {
   id: string;
   type: string;
@@ -70,6 +78,7 @@ export interface ERNode {
   };
 }
 
+/** A relationship edge between two ER diagram nodes. */
 export interface EREdge {
   id: string;
   source: string;
@@ -81,6 +90,7 @@ export interface EREdge {
   style: Record<string, string | number>;
 }
 
+/** The full analysis response from the backend — health score, issues, recommendations, ER diagram, and optional AI insights. */
 export interface AnalysisResult {
   meta: {
     tablesFound: number;
@@ -116,6 +126,7 @@ export interface AnalysisResult {
   } | null;
 }
 
+/** A pre-built schema example shown on the Analyze page for quick testing. */
 export interface ExampleSchema {
   id: string;
   name: string;

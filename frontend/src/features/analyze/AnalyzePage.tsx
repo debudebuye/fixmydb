@@ -21,7 +21,11 @@ export default function AnalyzePage() {
   const [processStep, setProcessStep] = useState<ProcessStep>('input');
   const [validationError, setValidationError] = useState<string | null>(null);
 
-  useEffect(() => { getExampleSchemas().then(setExamples).catch(() => {}); }, []);
+  useEffect(() => {
+  getExampleSchemas()
+    .then(setExamples)
+    .catch((err) => console.error('Failed to load example schemas:', err));
+}, []);
 
   // Simulate process steps during loading
   useEffect(() => {
@@ -61,22 +65,17 @@ export default function AnalyzePage() {
       });
       setTimeout(() => document.getElementById('results')?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (err: unknown) {
-      const message = err && typeof err === 'object' && 'response' in err
-        ? (err as { response: { data: { error: string } } }).response?.data?.error
-        : err instanceof Error ? err.message
-        : 'Analysis failed';
+      const message = err instanceof Error ? err.message : 'Analysis failed';
       setError(message);
       setIsLoading(false);
     }
   };
 
-  const handleUpload = async (file: File) => {
+  const handleUpload = async (files: File[]) => {
     setIsLoading(true); setError(null);
-    try { const d = await uploadSchemaFile(file); setSql(d.sql); setIsLoading(false); }
+    try { const d = await uploadSchemaFile(files); setSql(d.sql); setIsLoading(false); }
     catch (err: unknown) {
-      const message = err && typeof err === 'object' && 'response' in err
-        ? (err as { response: { data: { error: string } } }).response?.data?.error
-        : 'Upload failed';
+      const message = err instanceof Error ? err.message : 'Upload failed';
       setError(message);
       setIsLoading(false);
     }

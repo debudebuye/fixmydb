@@ -1,139 +1,181 @@
 # Contributing to FixMyDB
 
-First off, thanks for taking the time to contribute! 🎉
+Thanks for your interest in contributing! FixMyDB is an open-source project, and we welcome all kinds of contributions — bug fixes, new analysis rules, documentation, or feature ideas.
 
 ## Code of Conduct
 
-This project and everyone participating in it is governed by our [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
-
-## What We're Looking For
-
-- **Bug reports** — clear steps to reproduce
-- **Feature requests** — describe the problem you're solving
-- **Code contributions** — PRs for issues labeled `good first issue` or `help wanted`
-- **Documentation improvements** — typos, clarifications, translations
-- **Example schemas** — add realistic schemas to `backend/examples/`
+Be respectful, constructive, and inclusive. We're all here to make database schemas better.
 
 ## Getting Started
 
-### Prerequisites
+1. Fork the repository
+2. Clone your fork:
+   ```bash
+   git clone https://github.com/your-username/fixmydb.git
+   cd fixmydb
+   ```
+3. Install dependencies:
+   ```bash
+   cd frontend && npm install
+   cd ../backend && npm install
+   ```
+4. Start development:
+   ```bash
+   # Terminal 1 — backend
+   cd backend && npm run dev
 
-- Node.js 18+
-- npm or yarn
-
-### Setup
-
-```bash
-# Fork and clone the repo
-git clone https://github.com/your-username/fixmydb.git
-cd fixmydb
-
-# Install dependencies
-cd frontend && npm install
-cd ../backend && npm install
-
-# Optional: set up environment variables
-cp backend/.env.example backend/.env
-```
-
-### Development
-
-```bash
-# Terminal 1: Backend
-cd backend
-npm run dev
-
-# Terminal 2: Frontend
-cd frontend
-npm run dev
-```
-
-Open http://localhost:5173 in your browser.
+   # Terminal 2 — frontend
+   cd frontend && npm run dev
+   ```
 
 ## Project Structure
 
 ```
-fixmydb/
-├── frontend/          # React + TypeScript + Vite
-│   ├── src/
-│   │   ├── features/      # Feature modules (analyze, settings, etc.)
-│   │   ├── shared/        # Shared components, services, types
-│   │   └── App.tsx
-│   └── package.json
-├── backend/           # Node.js + Express
-│   ├── src/
-│   │   ├── routes/        # Express route handlers
-│   │   ├── services/      # Business logic
-│   │   └── index.js
-│   └── package.json
-├── README.md
-├── ARCHITECTURE.md
-└── LICENSE
+backend/
+├── src/
+│   ├── index.js                    # Express entry point
+│   ├── features/
+│   │   └── {feature}/
+│   │       ├── routes.js           # API routes
+│   │       └── services/           # Business logic
+│   └── shared/utils/               # Shared utilities
+├── data/                           # Local SQLite DB
+└── package.json
+
+frontend/
+├── src/
+│   ├── components/                 # React components
+│   │   ├── layout/                 # Header, Layout
+│   │   ├── input/                  # SQLEditor
+│   │   ├── analysis/               # Result tabs
+│   │   └── ui/                     # Shared UI components
+│   ├── pages/                      # Route pages
+│   ├── services/                   # API client
+│   └── types/                      # TypeScript types
+└── package.json
 ```
 
-## Coding Guidelines
+## How to Contribute
 
-### General
+### Adding a New Analysis Rule
 
-- Write readable, self-documenting code over comments
-- Keep functions small and focused (one job per function)
-- Use meaningful variable and function names
+The analysis engine uses a **rules-based architecture**. Each rule is a standalone module in `backend/src/features/analyze/services/rules/`.
 
-### Frontend (React + TypeScript)
+**Quick start:**
 
-- Use TypeScript strict mode — avoid `any` wherever possible
-- Prefer functional components with hooks over class components
-- Co-locate styles using inline `style` objects or CSS variables
-- Use `const` assertions and proper typing for event handlers
-- Follow existing patterns in the codebase for consistency
+1. Create `rules/yourRule.js` — export a `run` function:
+   ```js
+   function run(table, context) {
+     // table: { name, columns, foreignKeys, primaryKeys, indexes, checks, constraints }
+     // context: { tables, relationships, tablePatterns, patterns, mode }
+     if (/* condition */) {
+       return { issues: [{ severity: 'high', table: table.name, type: 'your_type', message: '...', recommendation: '...' }] };
+     }
+     return {};
+   }
+   module.exports = { run };
+   ```
 
-### Backend (Node.js + Express)
+2. Register it in `rules/index.js` — add to the `tableRules` array:
+   ```js
+   { run: require('./yourRule').run },
+   ```
 
-- Use async/await over raw promises or callbacks
-- Handle errors with try/catch and return meaningful error messages
-- Keep route handlers thin — move logic to service files
-- Validate input at the route level
+3. If your issue type should affect the health score, add its type string to the `PENALTY_TIERS` array in `healthScore.js`.
 
-### Git Commit Messages
+4. Add tests in `rules/yourRule.test.js`:
+   ```js
+   const { run } = require('./yourRule');
+   const { makeTable, makeColumn } = require('./test-utils');
 
-Use conventional commits:
+   it('detects the problem', () => {
+     const t = makeTable('users', [makeColumn('email')]);
+     const result = run(t, {});
+     expect(result.issues).toHaveLength(1);
+   });
+   ```
 
-```
-feat: add schema comparison view
-fix: handle empty SQL gracefully
-docs: update API endpoints in README
-refactor: extract ER diagram logic into service
-chore: bump dependencies
-```
+**Rule conventions:**
+- `run(table, context)` returns `{ issues?, recommendations? }`
+- Issues have `severity` (high/medium/low) and affect the health score
+- Recommendations do not affect the health score
+- Both use `type` strings for deduplication and categorization
+- Test files import `makeTable`/`makeColumn` from `./test-utils`
+
+**Existing rules to use as reference:**
+- Simple: `missingPrimaryKey.js` (single check, single issue)
+- Column-level: `columnConstraints.js` (iterates columns, multiple checks)
+- Schema-level: `circularDependencies.js` (ignores table arg, uses context)
+
+### Adding a New API Endpoint
+
+1. Create a new folder under `backend/src/features/{name}/`
+2. Add `routes.js` with Express routes
+3. Register it in `backend/src/index.js` as `app.use('/api/{name}', routes)`
+4. Add a corresponding frontend service call in `frontend/src/services/`
+
+### Frontend Changes
+
+- Components go in `frontend/src/components/{category}/`
+- Pages go in `frontend/src/pages/`
+- Run `npm run lint` and `npm run build` before submitting
+
+## Development Guidelines
+
+### Code Style
+
+- **Backend**: Plain JavaScript (CommonJS), no TypeScript yet
+- **Frontend**: TypeScript + React + Tailwind CSS
+- **File naming**: camelCase for JS files, PascalCase for TSX components
+- **Formatting**: Follow existing patterns (tab indentation, etc.)
+
+### Naming Conventions
+
+- Backend functions: `camelCase`  (e.g., `analyzeSchema`, `calculateHealthScore`)
+- Backend files: `camelCase.js`  (e.g., `schemaAnalyzer.js`)
+- Frontend components: `PascalCase.tsx` (e.g., `SQLEditor.tsx`)
+- Frontend services: `camelCase.ts` (e.g., `apiClient.ts`)
+- Database columns: `snake_case`
+
+### File Size
+
+- Keep files under **300 lines** when possible
+- If a file grows beyond that, split it into focused modules (see `schemaAnalyzer.js` → `schemaPatterns.js`, `schemaIssues.js`, `healthScore.js`)
+
+### Testing
+
+- Backend tests use **Vitest**
+- Test files are co-located: `serviceName.test.js` next to `serviceName.js`
+- Run all tests: `cd backend && npm test`
+- Run a single test file: `cd backend && npx vitest run path/to/test`
+
+### API Changes
+
+- Document new endpoints in `backend/src/swagger.js`
+- Keep responses backward-compatible when possible
+- Add validation for all inputs (see `analyze/routes.js` for patterns)
 
 ## Pull Request Process
 
-1. **Find or create an issue** — comment to let others know you're working on it
-2. **Fork the repo** and create a branch from `main`
-   ```
-   git checkout -b feat/my-feature
-   ```
-3. **Make your changes** — keep them focused on the issue
-4. **Run lint and build**
-   ```bash
-   cd frontend && npm run lint && npm run build
-   cd ../backend && npm run lint && npm run build
-   ```
-5. **Write or update tests** if applicable
-6. **Commit** using conventional commit messages
-7. **Push** and open a Pull Request against `main`
-8. **Describe your changes** — reference the issue number, explain what and why
+1. Create a branch: `git checkout -b feature/your-feature-name`
+2. Make your changes
+3. Run lint: `cd backend && npm run lint`
+4. Run tests: `cd backend && npm test`
+5. Commit with a clear message: `git commit -m "Add X rule for Y detection"`
+6. Push: `git push origin feature/your-feature-name`
+7. Open a pull request against `main`
+8. In the PR description, explain:
+   - What the change does
+   - Why it's needed
+   - How to test it
 
-### PR Review Checklist
+## Reporting Bugs
 
-- [ ] Code follows project style and conventions
-- [ ] No lint errors or TypeScript warnings
-- [ ] Frontend builds successfully (`npm run build`)
-- [ ] Backend starts without errors (`npm run dev`)
-- [ ] New features include documentation if needed
-- [ ] No hardcoded secrets, API keys, or credentials
+- Open a [GitHub Issue](https://github.com/debudebuye/fixmydb/issues)
+- Include: steps to reproduce, expected vs actual behavior, SQL schema if relevant
+- For security issues, see [SECURITY.md](SECURITY.md)
 
-## Need Help?
+## Questions?
 
-- Open a [Discussion](https://github.com/debudebuye/fixmydb/discussions) for questions
-- Open an [Issue](https://github.com/debudebuye/fixmydb/issues) for bugs or feature requests
+- Email: [hello@fixmydb.dev](mailto:hello@fixmydb.dev)
+- GitHub Discussions: [Join the community](https://github.com/debudebuye/fixmydb/discussions)

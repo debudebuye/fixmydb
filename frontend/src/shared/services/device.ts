@@ -1,3 +1,4 @@
+/** Generates a UUID v4 using crypto.getRandomValues. */
 const STORAGE_KEY = 'fixmydb_device_id';
 
 function generateId(): string {
@@ -9,6 +10,7 @@ function generateId(): string {
   return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`;
 }
 
+/** Returns a persistent device ID from localStorage, creating one if missing. Falls back to anon-{timestamp} in private browsing mode. */
 export function getDeviceId(): string {
   try {
     let id = localStorage.getItem(STORAGE_KEY);

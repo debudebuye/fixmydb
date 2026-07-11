@@ -3,13 +3,14 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
+const { sendSuccess, sendError } = require('../../shared/middleware/response');
+const logger = require('../../shared/utils/logger');
 
 const router = express.Router();
 
-// Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadDir = path.join(__dirname, '../../../uploads');
+    const uploadDir = path.join(process.cwd(), 'uploads');
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
@@ -22,46 +23,72 @@ const storage = multer.diskStorage({
   },
 });
 
+const ALLOWED_MIMES = ['application/sql', 'text/plain', 'application/json', 'text/x-sql', 'application/x-sql', 'application/octet-stream'];
+
+function looksLikeText(buf) {
+  if (buf.length === 0) return false;
+  for (let i = 0; i < Math.min(buf.length, 512); i++) {
+    const b = buf[i];
+    if (b === 0 || b === 0xFF) return false;
+  }
+  return true;
+}
+
 const upload = multer({
   storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
+  limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const allowedExts = ['.sql', '.txt', '.json'];
     const ext = path.extname(file.originalname).toLowerCase();
-    if (allowedExts.includes(ext)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only .sql, .txt, and .json files are allowed'));
+    if (!allowedExts.includes(ext)) {
+      return cb(new Error('Only .sql, .txt, and .json files are allowed'));
     }
+    if (file.mimetype && !ALLOWED_MIMES.includes(file.mimetype)) {
+      return cb(new Error('Invalid file type'));
+    }
+    cb(null, true);
   },
 });
 
-/**
- * POST /api/upload
- * Upload a schema file
- */
-router.post('/', upload.single('file'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: 'No file uploaded' });
+router.post('/', upload.array('files', 10), async (req, res) => {
+  if (!req.files || req.files.length === 0) {
+    return sendError(res, 400, 'NO_FILE', 'No file uploaded');
   }
 
-  try {
-    const filePath = req.file.path;
-    const content = fs.readFileSync(filePath, 'utf-8');
+  const results = [];
+  const errors = [];
 
-    // Return the content to be analyzed
-    res.json({
-      filename: req.file.originalname,
-      size: req.file.size,
-      sql: content,
-    });
-
-    // Clean up file after reading
-    fs.unlinkSync(filePath);
-  } catch (err) {
-    console.error('Upload error:', err);
-    res.status(500).json({ error: 'Failed to read file', detail: err.message });
+  for (const file of req.files) {
+    try {
+      const buf = fs.readFileSync(file.path);
+      if (!looksLikeText(buf)) {
+        errors.push({ filename: file.originalname, error: 'File contains binary content' });
+      } else {
+        results.push({
+          filename: file.originalname,
+          size: file.size,
+          sql: buf.toString('utf-8'),
+        });
+      }
+    } catch (err) {
+      errors.push({ filename: file.originalname, error: 'Failed to read file' });
+    } finally {
+      try { fs.unlinkSync(file.path); } catch {}
+    }
   }
+
+  if (results.length === 0) {
+    return sendError(res, 400, 'NO_VALID_FILES', errors.length ? errors.map(e => e.error).join('; ') : 'No valid files uploaded');
+  }
+
+  const combinedSql = results.map(r => r.sql).join('\n\n');
+
+  sendSuccess(res, {
+    files: results.map(r => ({ filename: r.filename, size: r.size })),
+    sql: combinedSql,
+    fileCount: results.length,
+    errorCount: errors.length,
+  });
 });
 
 module.exports = router;

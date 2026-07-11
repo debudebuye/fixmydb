@@ -5,6 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
+    "start:production": "cross-env NODE_ENV=production node src/index.js",
     "dev": "nodemon src/index.js",
     "test": "vitest run",
     "lint": "eslint ."
@@ -16,12 +17,13 @@
     "analysis",
     "ai"
   ],
-  "author": "",
+  "author": "FixMyDB Team <hello@fixmydb.dev>",
   "license": "MIT",
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
-    "@supabase/supabase-js": "^2.110.0",
+    "@supabase/supabase-js": "^2.109.0",
     "cors": "^2.8.5",
+    "cross-env": "^10.1.0",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-rate-limit": "^8.5.2",
@@ -33,11 +35,14 @@
     "sql.js": "^1.14.1",
     "swagger-jsdoc": "^6.3.0",
     "swagger-ui-express": "^5.0.1",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "ws": "^8.21.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
-    "eslint": "^9.26.0",
-    "nodemon": "^3.1.4",
-    "vitest": "^3.1.3"
+    "eslint": "^9.39.4",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.2.2",
+    "vitest": "^3.2.7"
   }
 }

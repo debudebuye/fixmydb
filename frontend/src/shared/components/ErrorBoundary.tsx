@@ -1,6 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 
+/** Catches render errors and shows a fallback UI with error details and a refresh button. */
 interface Props { children: ReactNode; }
 interface State { hasError: boolean; error: Error | null; }
 

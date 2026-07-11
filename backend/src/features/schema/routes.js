@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const { sendSuccess } = require('../../shared/middleware/response');
 
 /**
- * GET /api/schema/examples
+ * GET /api/v1/schema/examples
  * Return example schemas for demo
  */
 router.get('/examples', (req, res) => {
@@ -111,7 +112,7 @@ CREATE INDEX idx_likes_post_id ON likes(post_id);`,
     },
   ];
 
-  res.json(examples);
+  sendSuccess(res, examples);
 });
 
 module.exports = router;

@@ -1,4 +1,4 @@
-import { Shield, KeyRound, Server, Globe, Lock, EyeOff, Database, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Shield, KeyRound, Server, Globe, Lock, EyeOff, Database, CheckCircle2, ArrowRight, Send } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const S = {
@@ -240,11 +240,4 @@ export default function SecurityPage() {
   );
 }
 
-function Send({ size = 24, ...props }: React.SVGProps<SVGSVGElement> & { size?: number }) {
-  return (
-    <svg width={size} height={size} {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="22" y1="2" x2="11" y2="13" />
-      <polygon points="22 2 15 22 11 13 2 9 22 2" />
-    </svg>
-  );
-}
+

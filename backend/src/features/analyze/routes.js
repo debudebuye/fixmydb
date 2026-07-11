@@ -8,45 +8,28 @@ const { generateERDiagram } = require('./services/erDiagramGenerator');
 const { generateOptimizedSQL } = require('./services/sqlGenerator');
 const { enhanceWithAI } = require('./services/openaiAnalyzer');
 const { trackAnalysis } = require('../../shared/utils/analyticsStore');
+const { schemas, validate } = require('../../shared/middleware/validate');
+const { sendSuccess, sendError } = require('../../shared/middleware/response');
+const logger = require('../../shared/utils/logger');
 
-/**
- * POST /api/analyze
- * Main analysis endpoint
- */
-router.post('/', async (req, res) => {
-  const { sql, dialect = 'postgresql', analysisMode = 'system', deviceId, apiKey, aiConfig } = req.body;
-
-  if (!sql || typeof sql !== 'string' || sql.trim().length === 0) {
-    return res.status(400).json({ error: 'SQL schema is required' });
-  }
+router.post('/', validate(schemas.analyze), async (req, res) => {
+  const { sql, dialect, analysisMode, deviceId, apiKey, aiConfig } = req.body;
 
   try {
-    // Step 1: Parse the SQL
     const schema = parseSQLSchema(sql);
 
     if (schema.tables.length === 0) {
-      return res.status(400).json({
-        error: 'No valid CREATE TABLE statements found',
+      return sendError(res, 400, 'INVALID_SCHEMA', 'No valid CREATE TABLE statements found', {
         hint: 'Make sure your SQL contains valid CREATE TABLE statements',
       });
     }
 
-    // Step 2: Analyze schema
     const analysis = analyzeSchema(schema, { mode: analysisMode });
-
-    // Step 2b: Domain analysis with confidence tracking
-    const domainAnalysis = analyzeDomain(schema, analysis.tablePatterns);
-
-    // Step 3: Normalization analysis
+    const domainAnalysis = analyzeDomain(schema);
     const normalization = analyzeNormalization(schema, analysis.tablePatterns, { mode: analysisMode });
-
-    // Step 4: Generate ER diagram data
     const erDiagram = generateERDiagram(schema);
-
-    // Step 5: Generate optimized SQL
     const optimizedSQL = generateOptimizedSQL(schema, analysis, dialect);
 
-    // Step 6: Optional AI enhancement
     let aiInsights = null;
     let aiError = null;
     try {
@@ -60,7 +43,6 @@ router.post('/', async (req, res) => {
       aiError = (aiConfig?.apiKey || apiKey) ? err.message : null;
     }
 
-    // Track analytics (fire-and-forget)
     trackAnalysis(deviceId).catch(() => {});
 
     const result = {
@@ -94,12 +76,15 @@ router.post('/', async (req, res) => {
       aiInsights,
     };
 
-    res.json(result);
+    sendSuccess(res, result);
   } catch (err) {
-    console.error('Analysis error:', err);
-    res.status(500).json({ error: 'Failed to analyze schema', detail: err.message });
+    logger.error('Analysis error', { err: err.message, requestId: res.locals.requestId });
+    sendError(res, 500, 'ANALYSIS_FAILED', 'Failed to analyze schema',
+      isProduction ? undefined : err.message);
   }
 });
+
+const isProduction = process.env.NODE_ENV === 'production';
 
 function generateSummary(analysis, normalization, domainAnalysis, aiInsights) {
   const { healthScore, issues, recommendations } = analysis;

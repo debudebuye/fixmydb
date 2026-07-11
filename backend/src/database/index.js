@@ -1,16 +1,22 @@
 const path = require('path');
 const fs = require('fs');
 const initSqlJs = require('sql.js');
+const { supabase, enabled: supabaseEnabled } = require('../shared/utils/supabase');
+const logger = require('../shared/utils/logger');
 
+const useSupabase = supabaseEnabled;
+
+// ── SQLite provider (local/desktop) ──────────────────────────
 let db = null;
 let dbPath = null;
+let saveTimer = null;
 
 function getDataDir() {
   if (process.env.FIXMYDB_DATA_PATH) return process.env.FIXMYDB_DATA_PATH;
-  return path.join(__dirname, '..', '..', '..', 'data');
+  return path.join(__dirname, '..', '..', 'data');
 }
 
-async function initDatabase() {
+async function initSqlite() {
   const dataDir = getDataDir();
   if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
   dbPath = path.join(dataDir, 'fixmydb.db');
@@ -32,15 +38,85 @@ async function initDatabase() {
     fullResult TEXT,
     deviceId TEXT
   )`);
-  save();
+  db.run('CREATE INDEX IF NOT EXISTS idx_history_timestamp ON history(timestamp DESC)');
+  saveSqlite();
 }
 
-function save() {
+function scheduleSave() {
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    if (!db) return;
+    try {
+      fs.writeFileSync(dbPath, Buffer.from(db.export()));
+    } catch (err) {
+      logger.error('SQLite save failed', { err: err.message });
+    }
+  }, 200);
+}
+
+function saveSqliteImmediate() {
+  if (saveTimer) clearTimeout(saveTimer);
   if (!db) return;
-  fs.writeFileSync(dbPath, Buffer.from(db.export()));
+  try {
+    fs.writeFileSync(dbPath, Buffer.from(db.export()));
+  } catch (err) {
+    logger.error('SQLite save failed', { err: err.message });
+  }
 }
 
-function getHistory() {
+// ── Supabase provider (production) ───────────────────────────
+async function getHistorySupabase() {
+  const { data, error } = await supabase
+    .from('history')
+    .select('*')
+    .order('timestamp', { ascending: false });
+
+  if (error) {
+    logger.error('Supabase history fetch error', { err: error.message });
+    return [];
+  }
+
+  return (data || []).map(row => {
+    if (row.fullResult && typeof row.fullResult === 'string') {
+      try { row.fullResult = JSON.parse(row.fullResult); } catch {}
+    }
+    return row;
+  });
+}
+
+async function addHistorySupabase(entry) {
+  const payload = {
+    ...entry,
+    fullResult: entry.fullResult ? JSON.stringify(entry.fullResult) : null,
+  };
+
+  const { error } = await supabase.from('history').insert([payload]);
+  if (error) {
+    logger.error('Supabase history insert error', { err: error.message });
+  }
+}
+
+async function clearHistorySupabase() {
+  const { error } = await supabase.from('history').delete().neq('id', '');
+  if (error) {
+    logger.error('Supabase history clear error', { err: error.message });
+  }
+}
+
+// ── Unified API (always async) ───────────────────────────────
+async function initDatabase() {
+  if (useSupabase) {
+    logger.info('Using Supabase as database provider');
+    return;
+  }
+  await initSqlite();
+  logger.info('SQLite database initialized');
+}
+
+async function getHistory() {
+  if (useSupabase) {
+    return getHistorySupabase();
+  }
   if (!db) return [];
   const result = db.exec('SELECT * FROM history ORDER BY timestamp DESC');
   if (!result.length) return [];
@@ -57,22 +133,30 @@ function getHistory() {
   });
 }
 
-function addHistory(entry) {
+async function addHistory(entry) {
+  if (useSupabase) {
+    return addHistorySupabase(entry);
+  }
   if (!db) return;
   const stmt = db.prepare(`INSERT INTO history (id, timestamp, healthScore, tablesFound, issuesCount, recommendationsCount, sqlPreview, dialect, fullResult, deviceId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
   stmt.run([entry.id, entry.timestamp, entry.healthScore ?? null, entry.tablesFound ?? null, entry.issuesCount ?? null, entry.recommendationsCount ?? null, entry.sqlPreview ?? null, entry.dialect ?? null, entry.fullResult ? JSON.stringify(entry.fullResult) : null, entry.deviceId ?? null]);
   stmt.free();
-  save();
+  scheduleSave();
 }
 
-function clearHistory() {
+async function clearHistory() {
+  if (useSupabase) {
+    return clearHistorySupabase();
+  }
   if (!db) return;
   db.run('DELETE FROM history');
-  save();
+  scheduleSave();
 }
 
 function closeDb() {
-  if (db) { save(); db.close(); db = null; }
+  if (!useSupabase) {
+    if (db) { saveSqliteImmediate(); db.close(); db = null; }
+  }
 }
 
-module.exports = { initDatabase, getHistory, addHistory, clearHistory, closeDb };
+module.exports = { initDatabase, getHistory, addHistory, clearHistory, closeDb, provider: useSupabase ? 'supabase' : 'sqlite' };

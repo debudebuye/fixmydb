@@ -1,14 +1,6 @@
 const OpenAI = require('openai');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-
-let serverClient = null;
-
-function getServerClient() {
-  if (!serverClient && process.env.OPENAI_API_KEY) {
-    serverClient = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-  }
-  return serverClient;
-}
+const logger = require('../../../shared/utils/logger');
 
 const promptTemplate = `You are an expert database architect. Analyze this SQL schema and provide specific recommendations.
 
@@ -62,18 +54,15 @@ async function enhanceWithAI(sql, localAnalysis, userApiKey, baseURL, model, pro
     return callGemini(sql, localAnalysis, userApiKey, model);
   }
 
-  // OpenAI-compatible providers
+  if (!userApiKey) {
+    return null;
+  }
+
   const clientOptions = { apiKey: userApiKey };
   if (baseURL) {
     clientOptions.baseURL = baseURL;
   }
-  const client = userApiKey
-    ? new OpenAI(clientOptions)
-    : getServerClient();
-
-  if (!client) {
-    return null;
-  }
+  const client = new OpenAI(clientOptions);
 
   try {
     const response = await client.chat.completions.create({
@@ -89,9 +78,7 @@ async function enhanceWithAI(sql, localAnalysis, userApiKey, baseURL, model, pro
     const content = response.choices[0].message.content;
     return parseJSONResponse(content);
   } catch (err) {
-    console.error('AI enhancement failed:', err.message);
-    if (err.status) console.error('  Status:', err.status);
-    if (err.code) console.error('  Code:', err.code);
+    logger.error('AI enhancement failed', { err: err.message, status: err.status, code: err.code });
     throw err;
   }
 }
@@ -117,7 +104,7 @@ async function callGemini(sql, localAnalysis, apiKey, model) {
     return parseJSONResponse(text);
   } catch (err) {
     const msg = cleanGeminiError(err);
-    console.error('Gemini enhancement failed:', msg);
+    logger.error('Gemini enhancement failed', { err: msg });
     throw new Error(msg);
   }
 }

@@ -22,7 +22,8 @@
   },
   "build": {
     "appId": "com.fixmydb.desktop",
-    "productName": "FixMyDB",
+    "productName": "FixMyDB Desktop",
+    "artifactName": "${productName}-${version}-${arch}.${ext}",
     "directories": {
       "output": "dist",
       "buildResources": "icons"
@@ -57,25 +58,44 @@
       }
     ],
     "win": {
-      "target": "nsis",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
       "icon": "./icons/icon.ico"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "runAfterFinish": true
+      "runAfterFinish": true,
+      "artifactName": "${productName}-${version}-Setup.${ext}"
     },
     "mac": {
       "target": [
-        "dmg",
-        "zip"
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "zip",
+          "arch": ["x64", "arm64"]
+        }
       ],
-      "icon": "./icons/icon.png"
+      "icon": "./icons/icon.png",
+      "category": "public.app-category.developer-tools"
     },
     "linux": {
       "target": [
-        "AppImage",
-        "deb"
+        {
+          "target": "AppImage",
+          "arch": ["x64"]
+        },
+        {
+          "target": "deb",
+          "arch": ["x64"]
+        }
       ],
       "icon": "./icons/icon.png",
       "maintainer": "FixMyDB <debudebuye@users.noreply.github.com>",

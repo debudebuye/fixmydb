@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import Editor from '@monaco-editor/react';
-import { Copy, Check, Download } from 'lucide-react';
+import { Copy, Check, Download, AlertTriangle } from 'lucide-react';
 import { useTheme } from '../../../shared/theme';
+import { trackDownloadEvent } from '../../../shared/services/api';
+import { getDeviceId } from '../../../shared/services/device';
 
 export default function SQLOutputTab({ sql }: { sql: string }) {
   const [copied, setCopied] = useState(false);
@@ -14,6 +16,7 @@ export default function SQLOutputTab({ sql }: { sql: string }) {
       download: 'fixmydb-schema.sql',
     });
     a.click(); URL.revokeObjectURL(a.href);
+    trackDownloadEvent(getDeviceId(), 'sql');
   };
 
   return (
@@ -35,6 +38,16 @@ export default function SQLOutputTab({ sql }: { sql: string }) {
           }}>
             <Download size={12} /> Download
           </button>
+        </div>
+      </div>
+      <div style={{
+        display: 'flex', alignItems: 'flex-start', gap: 10,
+        padding: '12px 14px', borderRadius: 8,
+        background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.15)',
+      }}>
+        <AlertTriangle size={14} color="#f59e0b" style={{ flexShrink: 0, marginTop: 2 }} />
+        <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.55 }}>
+          <strong style={{ color: '#f59e0b' }}>Review before applying.</strong> This is an early-stage optimization engine (v1). The suggested SQL may not account for your full application context, existing data, or migration constraints. Please review each change carefully and test in a staging environment before applying to production.
         </div>
       </div>
       <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid var(--border)' }}>

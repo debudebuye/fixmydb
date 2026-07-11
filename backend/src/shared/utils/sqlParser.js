@@ -1,17 +1,12 @@
 const { Parser } = require('node-sql-parser');
+const { manualParseCreateTable, extractTableName } = require('./manualSqlParser');
 
 const parser = new Parser();
 
-/**
- * Parse SQL DDL statements into a structured schema
- * @param {string} sql - Raw SQL DDL string
- * @returns {{ tables: Table[], relationships: Relationship[], rawAst: any }}
- */
 function parseSQLSchema(sql) {
   const tables = [];
   const relationships = [];
 
-  // Split SQL into individual statements
   const statements = sql
     .split(/;\s*\n|;\s*$/)
     .map(s => s.trim())
@@ -25,7 +20,6 @@ function parseSQLSchema(sql) {
         tables.push(table);
       }
     } catch (err) {
-      // Try manual parsing as fallback
       const table = manualParseCreateTable(stmt);
       if (table) tables.push(table);
     }
@@ -37,7 +31,6 @@ function parseSQLSchema(sql) {
       .trim();
   }
 
-  // Extract relationships from foreign keys
   for (const table of tables) {
     for (const fk of table.foreignKeys) {
       relationships.push({
@@ -97,9 +90,6 @@ function formatCheckConstraint(def) {
   return null;
 }
 
-/**
- * Parse a single CREATE TABLE statement using node-sql-parser
- */
 function parseCreateTable(stmt) {
   try {
     const ast = parser.astify(stmt, { database: 'PostgresQL' });
@@ -143,18 +133,15 @@ function parseCreateTable(stmt) {
           scale: def.definition?.scale,
         };
 
-        // Check inline primary key
         if (def.primary_key || def.unique_or_primary === 'primary key') {
           col.isPrimary = true;
           primaryKeys.push(col.name);
         }
 
-        // Check inline unique
         if (def.unique || def.unique_or_primary === 'unique') {
           col.isUnique = true;
         }
 
-        // Column-level CHECK constraint
         if (def.check) {
           const checkSql = formatCheckConstraint(def.check);
           col.check = checkSql;
@@ -164,7 +151,6 @@ function parseCreateTable(stmt) {
           }
         }
 
-        // Check inline foreign key / references
         if (def.reference_definition) {
           const ref = def.reference_definition;
           const refTableRaw = ref.table;
@@ -200,7 +186,6 @@ function parseCreateTable(stmt) {
         } else if (def.constraint_type === 'FOREIGN KEY' || def.constraint_type === 'foreign key') {
           const fkColRaw = def.definition?.[0];
           const fkCol = extractDefColumnName(fkColRaw);
-          // reference_definition.table can be an array [{table: 'users'}] or a string/object
           const refTableRaw = def.reference_definition?.table;
           let refTable = null;
           if (Array.isArray(refTableRaw)) {
@@ -258,13 +243,9 @@ function parseCreateTable(stmt) {
   }
 }
 
-/**
- * Extract column name from AST column definition - handles nested objects from node-sql-parser
- */
 function extractColumnName(colDef) {
   if (!colDef) return null;
-  
-  // node-sql-parser nests: def.column.column.expr.value
+
   if (colDef.column) {
     const c = colDef.column;
     if (typeof c === 'string') return c;
@@ -278,9 +259,6 @@ function extractColumnName(colDef) {
   return null;
 }
 
-/**
- * Extract column name from FK/constraint definition
- */
 function extractDefColumnName(def) {
   if (!def) return null;
   if (typeof def === 'string') return def;
@@ -321,144 +299,6 @@ function parseDefaultValue(defaultVal) {
   } catch {
     return null;
   }
-}
-
-function manualParseCreateTable(stmt) {
-  const tableNameMatch = stmt.match(/CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?["`]?(\w+)["`]?\s*\(/i);
-  if (!tableNameMatch) return null;
-
-  const tableName = tableNameMatch[1];
-  const columns = [];
-  const primaryKeys = [];
-  const foreignKeys = [];
-  const indexes = [];
-  const checks = [];
-
-  // Extract the content between the outermost parens
-  const contentMatch = stmt.match(/\((.+)\)/s);
-  if (!contentMatch) return null;
-
-  const content = contentMatch[1];
-  const lines = splitColumnDefinitions(content);
-
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed) continue;
-
-    const upper = trimmed.toUpperCase();
-
-    // PRIMARY KEY constraint
-    if (upper.startsWith('PRIMARY KEY')) {
-      const pkMatch = trimmed.match(/PRIMARY\s+KEY\s*\(([^)]+)\)/i);
-      if (pkMatch) {
-        const pkCols = pkMatch[1].split(',').map(c => c.trim().replace(/["`]/g, ''));
-        primaryKeys.push(...pkCols);
-        for (const pk of pkCols) {
-          const col = columns.find(c => c.name === pk);
-          if (col) col.isPrimary = true;
-        }
-      }
-      continue;
-    }
-
-    // FOREIGN KEY constraint
-    if (upper.startsWith('FOREIGN KEY') || upper.startsWith('CONSTRAINT')) {
-      const fkMatch = trimmed.match(/FOREIGN\s+KEY\s*\(([^)]+)\)\s*REFERENCES\s+["`]?(\w+)["`]?\s*\(([^)]+)\)/i);
-      if (fkMatch) {
-        foreignKeys.push({
-          column: fkMatch[1].trim().replace(/["`]/g, ''),
-          references: {
-            table: fkMatch[2].trim(),
-            column: fkMatch[3].trim().replace(/["`]/g, ''),
-          },
-        });
-      }
-      continue;
-    }
-
-    // INDEX constraint
-    if (upper.startsWith('INDEX') || upper.startsWith('KEY') || upper.startsWith('UNIQUE KEY')) {
-      continue;
-    }
-
-    if (upper.startsWith('CHECK')) {
-      checks.push(trimmed.replace(/,$/, ''));
-      continue;
-    }
-
-    // Column definition
-    const colMatch = trimmed.match(/^["`]?(\w+)["`]?\s+(\w+(?:\s*\([^)]*\))?)/);
-    if (!colMatch) continue;
-
-    const rawType = colMatch[2];
-    const typeUpper = rawType.toUpperCase();
-    let colLength, colScale;
-    const parenMatch = rawType.match(/\((\d+)(?:\s*,\s*(\d+))?\)/);
-    if (parenMatch) {
-      colLength = parseInt(parenMatch[1], 10);
-      if (parenMatch[2]) colScale = parseInt(parenMatch[2], 10);
-    }
-
-    const col = {
-      name: colMatch[1],
-      type: typeUpper,
-      nullable: !upper.includes('NOT NULL'),
-      default: null,
-      isPrimary: upper.includes('PRIMARY KEY'),
-      isUnique: upper.includes('UNIQUE'),
-      references: null,
-      length: colLength,
-      scale: colScale,
-    };
-
-    if (col.isPrimary) {
-      primaryKeys.push(col.name);
-    }
-
-    // Inline references
-    const refMatch = trimmed.match(/REFERENCES\s+["`]?(\w+)["`]?\s*\(([^)]+)\)/i);
-    if (refMatch) {
-      col.references = { table: refMatch[1], column: refMatch[2].trim().replace(/["`]/g, '') };
-      foreignKeys.push({ column: col.name, references: col.references });
-    }
-
-    // Default value
-    const defaultMatch = trimmed.match(/DEFAULT\s+(.+?)(?:\s+NOT\s+NULL|\s+NULL|\s+UNIQUE|\s+CHECK|\s+REFERENCES|\s+PRIMARY\s+KEY|,|$)/i);
-    if (defaultMatch) col.default = defaultMatch[1].trim().replace(/,$/, '');
-
-    columns.push(col);
-  }
-
-  return { name: tableName, columns, primaryKeys, foreignKeys, indexes, checks };
-}
-
-function extractTableName(stmt) {
-  const m = stmt.match(/CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?["`]?(\w+)["`]?/i);
-  return m ? m[1] : null;
-}
-
-/**
- * Split comma-delimited column definitions, respecting parentheses
- */
-function splitColumnDefinitions(content) {
-  const result = [];
-  let depth = 0;
-  let current = '';
-
-  for (const char of content) {
-    if (char === '(') depth++;
-    else if (char === ')') depth--;
-
-    if (char === ',' && depth === 0) {
-      result.push(current.trim());
-      current = '';
-    } else {
-      current += char;
-    }
-  }
-
-  if (current.trim()) result.push(current.trim());
-  return result;
 }
 
 module.exports = { parseSQLSchema, parseCreateTable };

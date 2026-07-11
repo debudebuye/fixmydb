@@ -29,12 +29,21 @@ function getServeScript() {
   return path.join(__dirname, 'scripts', 'serve-frontend.js');
 }
 
+function getIconPath() {
+  const iconName = process.platform === 'win32' ? 'icon.ico' : 'icon.png';
+  if (app.isPackaged) {
+    return path.join(process.resourcesPath, 'icons', iconName);
+  }
+  return path.join(__dirname, 'icons', iconName);
+}
+
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 520,
-    height: 480,
+    width: 480,
+    height: 540,
     resizable: false,
     title: 'FixMyDB Desktop',
+    icon: getIconPath(),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,

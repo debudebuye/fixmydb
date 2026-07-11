@@ -3,9 +3,9 @@
  * Identifies domain type, applies domain-specific rules, and tracks confidence levels
  */
 
-function analyzeDomain(schema, tablePatterns = {}) {
+function analyzeDomain(schema) {
   const { tables } = schema;
-  const domainSignals = identifyDomainSignals(tables, tablePatterns);
+  const domainSignals = identifyDomainSignals(tables);
   const detectedDomain = selectDomain(domainSignals);
   const domainRules = applyDomainRules(tables, detectedDomain);
   const confidenceAnalysis = analyzeConfidence(tables, domainRules);
@@ -18,7 +18,7 @@ function analyzeDomain(schema, tablePatterns = {}) {
   };
 }
 
-function identifyDomainSignals(tables, tablePatterns) {
+function identifyDomainSignals(tables) {
   const signals = {};
   const tableNames = tables.map(t => t.name.toLowerCase());
   const allColumns = tables.flatMap(t => t.columns.map(c => c.name.toLowerCase()));
@@ -141,7 +141,6 @@ function applyFinancialRules(tables) {
   }
 
   for (const table of transactionTables) {
-    const cols = table.columns.map(c => c.name.toLowerCase());
     const isAppendOnly = table.columns.some(c => c.name.toLowerCase() === 'deleted_at' || c.name.toLowerCase() === 'is_deleted');
     findings.push({
       type: 'financial_rule',
@@ -193,11 +192,9 @@ function applyFinancialRules(tables) {
 function applyEcommerceRules(tables) {
   const findings = [];
   const orderTables = tables.filter(t => /order|cart|checkout/.test(t.name.toLowerCase()));
-  const productTables = tables.filter(t => /product|item|sku/.test(t.name.toLowerCase()));
 
   for (const table of orderTables) {
     const cols = table.columns.map(c => c.name.toLowerCase());
-    const hasStatus = cols.includes('status');
     const hasOrderItems = tables.some(t => t.name.toLowerCase().includes('order_item') || t.name.toLowerCase().includes('order_line'));
 
     findings.push({

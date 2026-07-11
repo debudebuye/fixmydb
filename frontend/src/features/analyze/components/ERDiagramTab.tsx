@@ -7,6 +7,9 @@ import {
 import '@xyflow/react/dist/style.css';
 import { toPng } from 'html-to-image';
 import { Download } from 'lucide-react';
+import { trackDownloadEvent } from '../../../shared/services/api';
+import { getDeviceId } from '../../../shared/services/device';
+import { useTheme } from '../../../shared/theme';
 import type { ERNode, EREdge } from '../../../shared/types/schema';
 
 function TableNode({ data }: { data: ERNode['data'] }) {
@@ -51,21 +54,33 @@ export default function ERDiagramTab({ nodes, edges }: { nodes: ERNode[]; edges:
   const [fn, , onNC] = useNodesState(nodes as unknown as Node[]);
   const [fe, , onEC] = useEdgesState(edges as unknown as Edge[]);
   const containerRef = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   const download = useCallback(async () => {
     if (!containerRef.current) return;
+    const el = containerRef.current;
+    const hideEls = el.querySelectorAll('.react-flow__controls, .react-flow__minimap, .react-flow__background');
+    hideEls.forEach(e => { (e as HTMLElement).style.display = 'none'; });
     try {
-      const dataUrl = await toPng(containerRef.current, {
+      const dataUrl = await toPng(el, {
         backgroundColor: '#0d0d14',
         pixelRatio: 2,
+        filter: (node: HTMLElement) => {
+          if (node.classList?.contains('react-flow__controls') || node.classList?.contains('react-flow__minimap') || node.classList?.contains('react-flow__background')) return false;
+          return true;
+        },
       });
       const a = Object.assign(document.createElement('a'), {
         href: dataUrl,
         download: 'fixmydb-er-diagram.png',
       });
       a.click();
+      trackDownloadEvent(getDeviceId(), 'er-diagram');
     } catch {
       // download failed silently
+    } finally {
+      hideEls.forEach(e => { (e as HTMLElement).style.display = ''; });
     }
   }, []);
 
@@ -91,7 +106,14 @@ export default function ERDiagramTab({ nodes, edges }: { nodes: ERNode[]; edges:
           onNodesChange={onNC} onEdgesChange={onEC}
           nodeTypes={nodeTypes}
           fitView fitViewOptions={{ padding: 0.2 }}
-          defaultEdgeOptions={{ style: { stroke: 'var(--border-strong)', strokeWidth: 1.5 }, animated: false }}
+          proOptions={{ hideAttribution: true }}
+          defaultEdgeOptions={{
+            style: { stroke: '#6366f1', strokeWidth: 1.5 },
+            labelStyle: { fill: isDark ? '#94a3b8' : '#64748b', fontSize: 10, fontFamily: 'monospace' },
+            labelBgStyle: { fill: isDark ? '#131825' : '#ffffff', fillOpacity: 0.9 },
+            labelBgPadding: [4, 2] as [number, number],
+            animated: false,
+          }}
           style={{ background: 'var(--surface-0)' }}
         >
           <Controls style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 8 }} />

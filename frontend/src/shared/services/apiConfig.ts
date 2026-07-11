@@ -1,3 +1,4 @@
+/** Stored AI provider configuration — serialized to sessionStorage. */
 export interface AIConfig {
   provider: 'openai' | 'groq' | 'openrouter' | 'gemini';
   apiKey: string;
@@ -6,6 +7,7 @@ export interface AIConfig {
   label: string;
 }
 
+/** Metadata for a supported AI provider — models, pricing, and default values. */
 export interface ProviderOption {
   id: AIConfig['provider'];
   label: string;
@@ -86,6 +88,7 @@ export const PROVIDERS: ProviderOption[] = [
 
 const STORAGE_KEY = 'fixmydb_ai_config';
 
+/** Read the current AI config from sessionStorage. Returns null if not set. */
 export function getAIConfig(): AIConfig | null {
   try {
     const raw = sessionStorage.getItem(STORAGE_KEY);
@@ -96,6 +99,7 @@ export function getAIConfig(): AIConfig | null {
   }
 }
 
+/** Persist AI provider config to sessionStorage (cleared on tab close). */
 export function setAIConfig(config: AIConfig): void {
   try {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(config));
@@ -104,6 +108,7 @@ export function setAIConfig(config: AIConfig): void {
   }
 }
 
+/** Remove stored AI config from sessionStorage. */
 export function clearAIConfig(): void {
   try {
     sessionStorage.removeItem(STORAGE_KEY);
@@ -112,7 +117,7 @@ export function clearAIConfig(): void {
   }
 }
 
-/** Get the displayed provider label */
+/** Look up the display label for a provider ID (e.g., 'openai' → 'OpenAI'). */
 export function getProviderLabel(providerId: string): string {
   return PROVIDERS.find(p => p.id === providerId)?.label ?? providerId;
 }

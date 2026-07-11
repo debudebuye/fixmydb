@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 
+/** Counts from 0 to `value` with eased animation. Optional `formatter` for locale-aware display. */
 interface Props {
   value: number;
   duration?: number;

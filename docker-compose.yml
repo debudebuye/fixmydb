@@ -2,15 +2,24 @@ services:
   db:
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: fixmydb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${POSTGRES_DB:-fixmydb}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     ports:
+      # Remove this in production — DB should not be exposed to the host
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./backend/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-fixmydb}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     restart: unless-stopped
+    networks:
+      - fixmydb
 
   backend:
     build: ./backend
@@ -19,20 +28,38 @@ services:
     env_file:
       - ./backend/.env
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/fixmydb
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres@db:5432/fixmydb}
     volumes:
-      - ./backend/uploads:/app/uploads
+      - uploads:/app/uploads
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:5000/health', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
     restart: unless-stopped
+    networks:
+      - fixmydb
 
   frontend:
     build: ./frontend
     ports:
       - "80:80"
+      # Uncomment for HTTPS with certificates
+      # - "443:443"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     restart: unless-stopped
+    networks:
+      - fixmydb
 
 volumes:
   pgdata:
+  uploads:
+
+networks:
+  fixmydb:

@@ -10,7 +10,7 @@ Instead, report it privately via email or GitHub's private vulnerability reporti
 ### How to Report
 
 1. **GitHub**: Use the [Security Advisory](https://github.com/debudebuye/fixmydb/security/advisories/new) feature
-2. **Email**: Reach out to the repository owner through GitHub
+2. **Email**: [security@fixmydb.dev](mailto:security@fixmydb.dev)
 
 ### What to Include
 

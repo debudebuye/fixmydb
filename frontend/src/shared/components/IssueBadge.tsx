@@ -1,3 +1,4 @@
+/** Colored severity badge — red for HIGH, yellow for MED, blue for LOW. */
 interface Props { severity: 'high' | 'medium' | 'low'; }
 
 const MAP = {

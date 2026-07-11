@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 
+/** Circular gauge displaying schema health score with color-coded severity and animated transition. */
 interface Props { score: number; }
 
 function cfg(score: number) {

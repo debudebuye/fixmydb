@@ -1,5 +1,6 @@
 import { CheckCircle2, Terminal, FileText, BarChart3, Code2, Sparkles } from 'lucide-react';
 
+/** Ordered steps shown during analysis — tracks progress through the pipeline. */
 export type ProcessStep = 'input' | 'parsing' | 'analyzing' | 'scoring' | 'generating' | 'done';
 
 interface StepDef {
@@ -17,6 +18,7 @@ const STEPS: StepDef[] = [
   { key: 'done', icon: CheckCircle2, label: 'Complete' },
 ];
 
+/** Stepped progress indicator showing each analysis phase. `compact` hides labels for tight layouts. */
 interface Props {
   currentStep: ProcessStep;
   compact?: boolean;

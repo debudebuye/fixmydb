@@ -6,7 +6,7 @@ import { useTheme } from '../../../shared/theme';
 
 interface Props {
   value: string; onChange: (v: string) => void;
-  onAnalyze: () => void; onUpload: (f: File) => void;
+  onAnalyze: () => void;   onUpload: (files: File[]) => void;
   isLoading: boolean; examples: ExampleSchema[];
   dialect: string; onDialectChange: (d: string) => void;
 }
@@ -19,7 +19,8 @@ export default function SQLEditor({ value, onChange, onAnalyze, onUpload, isLoad
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault(); setDragging(false);
-    const f = e.dataTransfer.files?.[0]; if (f) onUpload(f);
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length) onUpload(files);
   };
 
   const handlePaste = async () => {
@@ -78,8 +79,8 @@ export default function SQLEditor({ value, onChange, onAnalyze, onUpload, isLoad
         >
           <Upload size={12} /> Upload .sql
         </button>
-        <input ref={fileRef} type="file" accept=".sql,.txt,.json" style={{ display: 'none' }}
-          onChange={e => { const f = e.target.files?.[0]; if (f) { onUpload(f); e.target.value = ''; } }} />
+        <input ref={fileRef} type="file" accept=".sql,.txt,.json" multiple style={{ display: 'none' }}
+          onChange={e => { const files = Array.from(e.target.files || []); if (files.length) { onUpload(files); e.target.value = ''; } }} />
 
         {/* Paste */}
         <button onClick={handlePaste} style={{
@@ -212,7 +213,7 @@ export default function SQLEditor({ value, onChange, onAnalyze, onUpload, isLoad
         borderTop: '1px solid var(--border-subtle)', background: 'var(--surface-1-alt)',
         fontFamily: 'monospace',
       }}>
-        drag & drop .sql file to load · ctrl+enter to analyze
+        drag & drop .sql files to load (multi-file supported) · ctrl+enter to analyze
       </div>
     </div>
   );

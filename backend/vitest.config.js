@@ -5,6 +5,7 @@ module.exports = defineConfig({
     globals: true,
     environment: 'node',
     include: ['src/**/*.test.js'],
+
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'],
