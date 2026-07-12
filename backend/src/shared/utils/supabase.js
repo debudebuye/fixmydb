@@ -19,8 +19,8 @@ if (supabaseUrl && supabaseKey) {
 async function initSchema() {
   if (!enabled) return;
 
-  const { error: historyError } = await supabase.rpc('exec_sql', {
-    sql: `
+  const tables = [
+    { name: 'history', createSql: `
       CREATE TABLE IF NOT EXISTS history (
         id TEXT PRIMARY KEY,
         timestamp TEXT NOT NULL,
@@ -34,57 +34,25 @@ async function initSchema() {
         "deviceId" TEXT
       );
       CREATE INDEX IF NOT EXISTS idx_history_timestamp ON history("timestamp" DESC);
-    `
-  });
-
-  if (historyError && historyError.message?.includes('function "exec_sql" does not exist')) {
-    await initSchemaViaRest();
-    return;
-  }
-
-  const { error: analysesError } = await supabase.rpc('exec_sql', {
-    sql: `
+    `},
+    { name: 'analyses', createSql: `
       CREATE TABLE IF NOT EXISTS analyses (
         id SERIAL PRIMARY KEY,
         analyses_id TEXT NOT NULL UNIQUE,
         device_id TEXT,
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );
-    `
-  });
-
-  if (analysesError && analysesError.message?.includes('function "exec_sql" does not exist')) {
-    return;
-  }
-}
-
-async function initSchemaViaRest() {
-  const tables = [
-    `CREATE TABLE IF NOT EXISTS public.history (
-      id TEXT PRIMARY KEY,
-      timestamp TEXT NOT NULL,
-      "healthScore" REAL,
-      "tablesFound" INTEGER,
-      "issuesCount" INTEGER,
-      "recommendationsCount" INTEGER,
-      "sqlPreview" TEXT,
-      dialect TEXT,
-      "fullResult" TEXT,
-      "deviceId" TEXT
-    )`,
-    `CREATE INDEX IF NOT EXISTS idx_history_timestamp ON public.history("timestamp" DESC)`,
-    `CREATE TABLE IF NOT EXISTS public.analyses (
-      id SERIAL PRIMARY KEY,
-      analyses_id TEXT NOT NULL UNIQUE,
-      device_id TEXT,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    )`,
+    `},
   ];
 
-  for (const sql of tables) {
-    const { error } = await supabase.query(sql);
-    if (error) {
-      logger.error('Supabase schema init error', { err: error.message });
+  for (const { name } of tables) {
+    const { error } = await supabase.from(name).select('id').limit(1);
+    if (error && error.code === '42P01') {
+      logger.error(`Table "${name}" does not exist in Supabase — run the migration`, {
+        file: 'backend/src/database/supabase-migration.sql',
+      });
+    } else if (error) {
+      logger.error(`Supabase table "${name}" check failed`, { err: error.message });
     }
   }
 }

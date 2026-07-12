@@ -1,16 +1,17 @@
 import { useState } from 'react';
-import { Zap, Copy, Check } from 'lucide-react';
+import { Zap, Copy, Check, AlertCircle } from 'lucide-react';
 import type { Recommendation } from '../../../shared/types/schema';
 
 export default function IndexesTab({ recommendations }: { recommendations: Recommendation[] }) {
   const [copied, setCopied] = useState<number | null>(null);
+  const [copyFailed, setCopyFailed] = useState(false);
 
   const copy = async (sql: string, i: number) => {
-    try { await navigator.clipboard.writeText(sql); } catch { /* clipboard denied */ }
+    try { await navigator.clipboard.writeText(sql); } catch { setCopyFailed(true); setTimeout(() => setCopyFailed(false), 2000); }
     setCopied(i); setTimeout(() => setCopied(null), 2000);
   };
   const copyAll = async () => {
-    try { await navigator.clipboard.writeText(recommendations.map(r => r.sql).join('\n')); } catch { /* clipboard denied */ }
+    try { await navigator.clipboard.writeText(recommendations.map(r => r.sql).join('\n')); } catch { setCopyFailed(true); setTimeout(() => setCopyFailed(false), 2000); }
     setCopied(-1); setTimeout(() => setCopied(null), 2000);
   };
 
@@ -41,8 +42,8 @@ export default function IndexesTab({ recommendations }: { recommendations: Recom
           color: copied === -1 ? '#34d399' : 'var(--text-muted)',
           borderRadius: 7, cursor: 'pointer',
         }}>
-          {copied === -1 ? <Check size={12} /> : <Copy size={12} />}
-          Copy All
+          {copied === -1 ? <Check size={12} /> : copyFailed ? <AlertCircle size={12} /> : <Copy size={12} />}
+          {copied === -1 ? 'Copied' : copyFailed ? 'Denied' : 'Copy All'}
         </button>
       </div>
 

@@ -24,24 +24,26 @@ export async function getHistory(): Promise<HistoryEntry[]> {
   }
 }
 
-/** Save an analysis result to the backend history. Silently fails if offline. */
-export async function addToHistory(entry: Omit<HistoryEntry, 'id' | 'timestamp'> & { fullResult?: AnalysisResult }): Promise<void> {
+/** Save an analysis result to the backend history. Returns false if the backend is unreachable. */
+export async function addToHistory(entry: Omit<HistoryEntry, 'id' | 'timestamp'> & { fullResult?: AnalysisResult }): Promise<boolean> {
   try {
     await api.post('/history', {
       ...entry,
       id: Date.now().toString(36),
       timestamp: new Date().toISOString(),
     });
+    return true;
   } catch {
-    // offline fallback
+    return false;
   }
 }
 
-/** Delete all saved history entries from the backend. */
-export async function clearHistory(): Promise<void> {
+/** Delete all saved history entries from the backend. Returns false on failure. */
+export async function clearHistory(): Promise<boolean> {
   try {
     await api.delete('/history');
+    return true;
   } catch {
-    // offline fallback
+    return false;
   }
 }

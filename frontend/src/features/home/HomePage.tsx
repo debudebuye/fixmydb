@@ -13,10 +13,18 @@ import CTASection from './CTASection';
 
 export default function HomePage() {
   const [stats, setStats] = useState<LiveStats | null>(null);
+  const [statsError, setStatsError] = useState(false);
 
   useEffect(() => {
+    let failCount = 0;
     const loadStats = async () => {
-      try { setStats(await fetchStats()); } catch { /* backend may not be running */ }
+      try {
+        setStats(await fetchStats());
+        setStatsError(false);
+      } catch {
+        failCount++;
+        if (failCount >= 3) setStatsError(true);
+      }
     };
     loadStats();
     const interval = setInterval(loadStats, 10000);
@@ -32,7 +40,7 @@ export default function HomePage() {
       <FeaturesGrid />
       <WorkflowSteps />
       <TargetUsers />
-      <LiveStatsSection stats={stats} />
+      <LiveStatsSection stats={stats} unavailable={statsError} />
       <CTASection />
     </div>
   );

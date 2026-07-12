@@ -4,11 +4,12 @@ import type { LiveStats } from '../../shared/services/api';
 
 interface LiveStatsSectionProps {
   stats: LiveStats | null;
+  unavailable?: boolean;
 }
 
 const S = { section: { maxWidth: 1100, margin: '0 auto', padding: '0 24px' } as React.CSSProperties };
 
-export default function LiveStatsSection({ stats }: LiveStatsSectionProps) {
+export default function LiveStatsSection({ stats, unavailable }: LiveStatsSectionProps) {
   return (
     <section style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', background: 'var(--surface-1-alt)', padding: '48px 0' }}>
       <div style={S.section}>
@@ -32,6 +33,11 @@ export default function LiveStatsSection({ stats }: LiveStatsSectionProps) {
             value={stats?.totalDownloads ?? null}
           />
         </div>
+        {unavailable && (
+          <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 16, textAlign: 'center' }}>
+            Live stats unavailable — backend may be offline
+          </p>
+        )}
       </div>
     </section>
   );

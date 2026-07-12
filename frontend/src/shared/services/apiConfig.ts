@@ -99,21 +99,23 @@ export function getAIConfig(): AIConfig | null {
   }
 }
 
-/** Persist AI provider config to sessionStorage (cleared on tab close). */
-export function setAIConfig(config: AIConfig): void {
+/** Persist AI provider config to sessionStorage (cleared on tab close). Returns false if storage is unavailable. */
+export function setAIConfig(config: AIConfig): boolean {
   try {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+    return true;
   } catch {
-    // ignore
+    return false;
   }
 }
 
-/** Remove stored AI config from sessionStorage. */
-export function clearAIConfig(): void {
+/** Remove stored AI config from sessionStorage. Returns false if storage is unavailable. */
+export function clearAIConfig(): boolean {
   try {
     sessionStorage.removeItem(STORAGE_KEY);
+    return true;
   } catch {
-    // ignore
+    return false;
   }
 }
 

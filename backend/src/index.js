@@ -29,11 +29,11 @@ async function start() {
       const url = process.env.BACKEND_URL;
       const plat = process.platform;
       if (plat === 'win32') {
-        exec(`start ${url}`);
+        exec(`start ${url}`, (err) => { if (err) logger.warn('Auto-open failed', { err: err.message }); });
       } else if (plat === 'darwin') {
-        exec(`open ${url}`);
+        exec(`open ${url}`, (err) => { if (err) logger.warn('Auto-open failed', { err: err.message }); });
       } else {
-        exec(`xdg-open ${url}`);
+        exec(`xdg-open ${url}`, (err) => { if (err) logger.warn('Auto-open failed', { err: err.message }); });
       }
     }
   });
@@ -49,7 +49,7 @@ async function start() {
   function shutdown(signal) {
     logger.info(`Received ${signal}, shutting down gracefully...`);
     server.close(() => {
-      closeDb();
+      try { closeDb(); } catch (err) { logger.error('Error closing database', { err: err.message }); }
       logger.info('Server stopped');
       process.exit(0);
     });
@@ -63,4 +63,7 @@ async function start() {
   process.on('SIGINT', () => shutdown('SIGINT'));
 }
 
-start();
+start().catch((err) => {
+  logger.error('Fatal startup error', { err: err.message });
+  process.exit(1);
+});

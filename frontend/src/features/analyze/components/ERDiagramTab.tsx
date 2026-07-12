@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import {
   ReactFlow, Controls, Background, MiniMap,
   BackgroundVariant, useNodesState, useEdgesState,
@@ -53,6 +53,7 @@ const nodeTypes = { tableNode: TableNode };
 export default function ERDiagramTab({ nodes, edges }: { nodes: ERNode[]; edges: EREdge[] }) {
   const [fn, , onNC] = useNodesState(nodes as unknown as Node[]);
   const [fe, , onEC] = useEdgesState(edges as unknown as Edge[]);
+  const [downloadFailed, setDownloadFailed] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -78,7 +79,8 @@ export default function ERDiagramTab({ nodes, edges }: { nodes: ERNode[]; edges:
       a.click();
       trackDownloadEvent(getDeviceId(), 'er-diagram');
     } catch {
-      // download failed silently
+      setDownloadFailed(true);
+      setTimeout(() => setDownloadFailed(false), 2000);
     } finally {
       hideEls.forEach(e => { (e as HTMLElement).style.display = ''; });
     }
@@ -97,7 +99,7 @@ export default function ERDiagramTab({ nodes, edges }: { nodes: ERNode[]; edges:
         <button onClick={download} className="btn-primary" style={{
           display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '6px 12px',
         }}>
-          <Download size={12} /> Download PNG
+          <Download size={12} /> {downloadFailed ? 'Export failed' : 'Download PNG'}
         </button>
       </div>
       <div ref={containerRef} style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid var(--border)', height: 540 }}>

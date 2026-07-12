@@ -3,13 +3,17 @@ import { Zap, Coffee, Copy, Check, Download, ShieldAlert } from 'lucide-react';
 
 export default function Footer() {
   const [copied, setCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
 
   const copyId = async () => {
     try {
       await navigator.clipboard.writeText(import.meta.env.VITE_BINANCE_ID);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch { /* clipboard not available */ }
+    } catch {
+      setCopyFailed(true);
+      setTimeout(() => setCopyFailed(false), 2000);
+    }
   };
 
   return (
@@ -61,8 +65,8 @@ export default function Footer() {
                 color: copied ? '#22c55e' : 'var(--text-muted)',
                 cursor: 'pointer', transition: 'all 0.15s',
               }}>
-              {copied ? <Check size={11} /> : <Copy size={11} />}
-              {copied ? 'Copied' : 'Copy'}
+              {copied ? <Check size={11} /> : copyFailed ? <Zap size={11} /> : <Copy size={11} />}
+              {copied ? 'Copied' : copyFailed ? 'Denied' : 'Copy'}
             </button>
           </div>
         </div>

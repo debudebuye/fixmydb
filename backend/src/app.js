@@ -29,7 +29,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 app.set('trust proxy', 1);
 
 // ── Security ──
-app.use(helmet());
+app.use(helmet(isProduction ? {} : { contentSecurityPolicy: false }));
 
 // ── Request ID (every request gets a unique ID) ──
 app.use(requestId);
@@ -51,7 +51,6 @@ const apiLimiter = rateLimit({
   max: 30,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => req.headers['x-forwarded-for'] || req.ip,
   handler: (req, res) => sendError(res, 429, 'RATE_LIMITED', 'Too many requests, please try again later.'),
 });
 app.use('/api/', apiLimiter);

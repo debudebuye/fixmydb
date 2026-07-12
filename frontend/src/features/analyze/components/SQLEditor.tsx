@@ -14,6 +14,7 @@ interface Props {
 export default function SQLEditor({ value, onChange, onAnalyze, onUpload, isLoading, examples, dialect, onDialectChange }: Props) {
   const [showExamples, setShowExamples] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [pasteFailed, setPasteFailed] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const { theme } = useTheme();
 
@@ -28,7 +29,8 @@ export default function SQLEditor({ value, onChange, onAnalyze, onUpload, isLoad
       const text = await navigator.clipboard.readText();
       if (text.trim()) onChange(text);
     } catch {
-      // Clipboard access can be blocked by the browser unless triggered by user action.
+      setPasteFailed(true);
+      setTimeout(() => setPasteFailed(false), 2000);
     }
   };
 
@@ -92,7 +94,7 @@ export default function SQLEditor({ value, onChange, onAnalyze, onUpload, isLoad
           onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-primary)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border-bright)'; }}
           onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-muted)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border)'; }}
         >
-          <ClipboardPaste size={12} /> Paste
+          <ClipboardPaste size={12} /> {pasteFailed ? 'Denied' : 'Paste'}
         </button>
 
         {/* Examples dropdown */}

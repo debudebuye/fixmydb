@@ -22,7 +22,7 @@ const storage = multer.diskStorage({
   },
 });
 
-const ALLOWED_MIMES = ['application/sql', 'text/plain', 'application/json', 'text/x-sql', 'application/x-sql', 'application/octet-stream'];
+const ALLOWED_MIMES = ['application/sql', 'text/plain', 'application/json', 'text/x-sql', 'application/x-sql'];
 
 function looksLikeText(buf) {
   if (buf.length === 0) return false;
@@ -50,44 +50,48 @@ const upload = multer({
 });
 
 router.post('/', upload.array('files', 10), async (req, res) => {
-  if (!req.files || req.files.length === 0) {
-    return sendError(res, 400, 'NO_FILE', 'No file uploaded');
-  }
-
-  const results = [];
-  const errors = [];
-
-  for (const file of req.files) {
-    try {
-      const buf = fs.readFileSync(file.path);
-      if (!looksLikeText(buf)) {
-        errors.push({ filename: file.originalname, error: 'File contains binary content' });
-      } else {
-        results.push({
-          filename: file.originalname,
-          size: file.size,
-          sql: buf.toString('utf-8'),
-        });
-      }
-    } catch {
-      errors.push({ filename: file.originalname, error: 'Failed to read file' });
-    } finally {
-      try { fs.unlinkSync(file.path); } catch { /* already cleaned up */ }
+  try {
+    if (!req.files || req.files.length === 0) {
+      return sendError(res, 400, 'NO_FILE', 'No file uploaded');
     }
+
+    const results = [];
+    const errors = [];
+
+    for (const file of req.files) {
+      try {
+        const buf = await fs.promises.readFile(file.path);
+        if (!looksLikeText(buf)) {
+          errors.push({ filename: file.originalname, error: 'File contains binary content' });
+        } else {
+          results.push({
+            filename: file.originalname,
+            size: file.size,
+            sql: buf.toString('utf-8'),
+          });
+        }
+      } catch {
+        errors.push({ filename: file.originalname, error: 'Failed to read file' });
+      } finally {
+        try { await fs.promises.unlink(file.path); } catch { /* already cleaned up */ }
+      }
+    }
+
+    if (results.length === 0) {
+      return sendError(res, 400, 'NO_VALID_FILES', errors.length ? errors.map(e => e.error).join('; ') : 'No valid files uploaded');
+    }
+
+    const combinedSql = results.map(r => r.sql).join('\n\n');
+
+    sendSuccess(res, {
+      files: results.map(r => ({ filename: r.filename, size: r.size })),
+      sql: combinedSql,
+      fileCount: results.length,
+      errorCount: errors.length,
+    });
+  } catch (err) {
+    sendError(res, 500, 'UPLOAD_FAILED', 'Failed to process upload');
   }
-
-  if (results.length === 0) {
-    return sendError(res, 400, 'NO_VALID_FILES', errors.length ? errors.map(e => e.error).join('; ') : 'No valid files uploaded');
-  }
-
-  const combinedSql = results.map(r => r.sql).join('\n\n');
-
-  sendSuccess(res, {
-    files: results.map(r => ({ filename: r.filename, size: r.size })),
-    sql: combinedSql,
-    fileCount: results.length,
-    errorCount: errors.length,
-  });
 });
 
 module.exports = router;

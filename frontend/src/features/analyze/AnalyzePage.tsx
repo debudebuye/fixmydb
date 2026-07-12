@@ -24,7 +24,7 @@ export default function AnalyzePage() {
   useEffect(() => {
   getExampleSchemas()
     .then(setExamples)
-    .catch((err) => console.error('Failed to load example schemas:', err));
+    .catch((err) => { if (import.meta.env.DEV) console.error('Failed to load example schemas:', err); });
 }, []);
 
   // Simulate process steps during loading

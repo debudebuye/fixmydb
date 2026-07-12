@@ -42,27 +42,15 @@ async function init() {
       client.release();
     }
   } else if (supabaseEnabled) {
-    const { error } = await supabase.rpc('exec_sql', {
-      sql: `
-        CREATE TABLE IF NOT EXISTS analyses (
-          id SERIAL PRIMARY KEY,
-          analyses_id TEXT NOT NULL UNIQUE,
-          device_id TEXT,
-          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-        );
-
-        CREATE TABLE IF NOT EXISTS downloads (
-          id SERIAL PRIMARY KEY,
-          device_id TEXT,
-          type TEXT NOT NULL,
-          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-        );
-      `
-    });
-    if (error) {
-      logger.info('Supabase analyses table will be created on first use if it does not exist');
+    const { error } = await supabase.from('analyses').select('id').limit(1);
+    if (error && error.code === '42P01') {
+      logger.error('Analytics tables missing in Supabase — run the migration in Supabase SQL Editor', {
+        file: 'backend/src/database/supabase-migration.sql',
+      });
+    } else if (error) {
+      logger.error('Supabase analytics table check failed', { err: error.message });
     } else {
-      logger.info('Supabase schema ensured for analytics');
+      logger.info('Supabase analytics tables verified');
     }
   }
 }

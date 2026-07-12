@@ -29,7 +29,7 @@ export default class ErrorBoundary extends Component<Props, State> {
     if (isChunkLoadError(error)) {
       setTimeout(() => window.location.reload(), 1500);
     } else {
-      console.error('ErrorBoundary caught:', error, info.componentStack);
+      if (import.meta.env.DEV) console.error('ErrorBoundary caught:', error, info.componentStack);
     }
   }
 

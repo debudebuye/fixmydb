@@ -139,8 +139,11 @@ async function addHistory(entry) {
   }
   if (!db) return;
   const stmt = db.prepare(`INSERT INTO history (id, timestamp, healthScore, tablesFound, issuesCount, recommendationsCount, sqlPreview, dialect, fullResult, deviceId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
-  stmt.run([entry.id, entry.timestamp, entry.healthScore ?? null, entry.tablesFound ?? null, entry.issuesCount ?? null, entry.recommendationsCount ?? null, entry.sqlPreview ?? null, entry.dialect ?? null, entry.fullResult ? JSON.stringify(entry.fullResult) : null, entry.deviceId ?? null]);
-  stmt.free();
+  try {
+    stmt.run([entry.id, entry.timestamp, entry.healthScore ?? null, entry.tablesFound ?? null, entry.issuesCount ?? null, entry.recommendationsCount ?? null, entry.sqlPreview ?? null, entry.dialect ?? null, entry.fullResult ? JSON.stringify(entry.fullResult) : null, entry.deviceId ?? null]);
+  } finally {
+    stmt.free();
+  }
   scheduleSave();
 }
 
@@ -155,7 +158,11 @@ async function clearHistory() {
 
 function closeDb() {
   if (!useSupabase) {
-    if (db) { saveSqliteImmediate(); db.close(); db = null; }
+    if (db) {
+      try { saveSqliteImmediate(); } catch { /* best effort */ }
+      try { db.close(); } catch { /* already closed */ }
+      db = null;
+    }
   }
 }
 

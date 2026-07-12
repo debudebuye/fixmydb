@@ -7,9 +7,10 @@ import { getDeviceId } from '../../../shared/services/device';
 
 export default function SQLOutputTab({ sql }: { sql: string }) {
   const [copied, setCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
 
   const { theme } = useTheme();
-  const copy = async () => { try { await navigator.clipboard.writeText(sql); } catch { /* clipboard denied */ } setCopied(true); setTimeout(() => setCopied(false), 2000); };
+  const copy = async () => { try { await navigator.clipboard.writeText(sql); } catch { setCopyFailed(true); setTimeout(() => setCopyFailed(false), 2000); } setCopied(true); setTimeout(() => setCopied(false), 2000); };
   const download = () => {
     const a = Object.assign(document.createElement('a'), {
       href: URL.createObjectURL(new Blob([sql], { type: 'text/plain' })),
@@ -31,7 +32,7 @@ export default function SQLOutputTab({ sql }: { sql: string }) {
             border: `1px solid ${copied ? 'rgba(16,185,129,0.25)' : 'var(--border)'}`,
             color: copied ? '#34d399' : 'var(--text-muted)', borderRadius: 7, cursor: 'pointer',
           }}>
-            {copied ? <Check size={12} /> : <Copy size={12} />} {copied ? 'Copied' : 'Copy'}
+            {copied ? <Check size={12} /> : copyFailed ? <AlertTriangle size={12} /> : <Copy size={12} />} {copied ? 'Copied' : copyFailed ? 'Denied' : 'Copy'}
           </button>
           <button onClick={download} className="btn-primary" style={{
             display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '6px 12px',

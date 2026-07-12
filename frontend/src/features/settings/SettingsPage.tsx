@@ -12,19 +12,20 @@ export default function SettingsPage() {
   const [apiKey, setApiKey] = useState('');
   const [selectedModel, setSelectedModel] = useState(() => getAIConfig()?.model ?? '');
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState(false);
 
-  const provider = PROVIDERS.find(p => p.id === selectedProvider)!;
+  const provider = PROVIDERS.find(p => p.id === selectedProvider) ?? PROVIDERS[0];
 
   const handleProviderChange = (id: string) => {
     setSelectedProvider(id);
-    const p = PROVIDERS.find(x => x.id === id)!;
+    const p = PROVIDERS.find(x => x.id === id) ?? PROVIDERS[0];
     setSelectedModel(p.defaultModel);
     setApiKey('');
     setSaved(false);
   };
 
   const handleSave = () => {
-    const p = PROVIDERS.find(x => x.id === selectedProvider)!;
+    const p = PROVIDERS.find(x => x.id === selectedProvider) ?? PROVIDERS[0];
     const trimmedKey = apiKey.trim();
     if (!trimmedKey) return;
     const cfg: AIConfig = {
@@ -34,7 +35,8 @@ export default function SettingsPage() {
       baseURL: p.baseURL,
       label: p.label,
     };
-    setAIConfig(cfg);
+    const ok = setAIConfig(cfg);
+    if (!ok) { setSaveError(true); setTimeout(() => setSaveError(false), 3000); return; }
     setConfig(cfg);
     setSaved(true);
     setApiKey('');
@@ -251,6 +253,16 @@ export default function SettingsPage() {
             </button>
           )}
         </div>
+
+        {saveError && (
+          <div role="alert" style={{
+            marginBottom: 24, padding: '10px 14px', borderRadius: 8,
+            background: 'rgba(244,63,94,0.08)', border: '1px solid rgba(244,63,94,0.2)',
+            fontSize: 12, color: '#fb7185',
+          }}>
+            Could not save configuration. Your browser may be blocking storage in private/incognito mode.
+          </div>
+        )}
 
         {/* Info cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 10, marginBottom: 32 }}>
