@@ -2,6 +2,18 @@ const OpenAI = require('openai');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const logger = require('../../../shared/utils/logger');
 
+const ALLOWED_BASE_URLS = [
+  'https://api.openai.com',
+  'https://api.groq.com',
+  'https://openrouter.ai',
+  'https://generativelanguage.googleapis.com',
+];
+
+function isAllowedBaseURL(url) {
+  if (!url) return true;
+  return ALLOWED_BASE_URLS.some(allowed => url.startsWith(allowed));
+}
+
 const promptTemplate = `You are an expert database architect. Analyze this SQL schema and provide specific recommendations.
 
 SQL Schema:
@@ -56,6 +68,10 @@ async function enhanceWithAI(sql, localAnalysis, userApiKey, baseURL, model, pro
 
   if (!userApiKey) {
     return null;
+  }
+
+  if (!isAllowedBaseURL(baseURL)) {
+    throw new Error('Invalid AI base URL. Only known AI provider URLs are allowed.');
   }
 
   const clientOptions = { apiKey: userApiKey };

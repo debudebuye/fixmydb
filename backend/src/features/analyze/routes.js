@@ -12,6 +12,8 @@ const { schemas, validate } = require('../../shared/middleware/validate');
 const { sendSuccess, sendError } = require('../../shared/middleware/response');
 const logger = require('../../shared/utils/logger');
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 router.post('/', validate(schemas.analyze), async (req, res) => {
   const { sql, dialect, analysisMode, deviceId, apiKey, aiConfig } = req.body;
 
@@ -83,8 +85,6 @@ router.post('/', validate(schemas.analyze), async (req, res) => {
       isProduction ? undefined : err.message);
   }
 });
-
-const isProduction = process.env.NODE_ENV === 'production';
 
 function generateSummary(analysis, normalization, domainAnalysis, aiInsights) {
   const { healthScore, issues, recommendations } = analysis;

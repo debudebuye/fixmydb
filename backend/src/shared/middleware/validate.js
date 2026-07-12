@@ -11,17 +11,18 @@ const schemas = {
   analyze: z.object({
     sql: z.string({ required_error: 'SQL schema is required' })
       .min(1, 'SQL schema is required')
+      .max(1000000, 'SQL schema too large (max 1MB)')
       .trim(),
     dialect: z.string().default('postgresql')
       .refine(v => ALLOWED_DIALECTS.includes(v), dialectMsg),
     analysisMode: z.string().default('system')
       .refine(v => ALLOWED_MODES.includes(v), modeMsg),
-    deviceId: z.string().optional(),
-    apiKey: z.string().optional(),
+    deviceId: z.string().max(256).optional(),
+    apiKey: z.string().max(512).optional(),
     aiConfig: z.object({
-      apiKey: z.string().optional(),
-      baseURL: z.string().optional(),
-      model: z.string().optional(),
+      apiKey: z.string().max(512).optional(),
+      baseURL: z.string().url().max(2048).optional(),
+      model: z.string().max(128).optional(),
       provider: z.enum(['openai', 'groq', 'openrouter', 'google', 'gemini']).optional(),
     }).optional(),
   }),
@@ -31,11 +32,11 @@ const schemas = {
     tablesFound: z.number().int().min(0).optional(),
     issuesCount: z.number().int().min(0).optional(),
     recommendationsCount: z.number().int().min(0).optional(),
-    sqlPreview: z.string().optional(),
+    sqlPreview: z.string().max(1000).optional(),
     dialect: z.string().refine(v => !v || ALLOWED_DIALECTS.includes(v), dialectMsg).optional(),
     fullResult: z.any().optional(),
-    deviceId: z.string().optional(),
-  }),
+    deviceId: z.string().max(256).optional(),
+  }).strict(),
 
   historyId: z.object({
     id: z.string().regex(

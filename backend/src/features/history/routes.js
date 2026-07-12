@@ -41,10 +41,18 @@ router.get('/:id', validate(schemas.historyId, 'params'), async (req, res) => {
 
 router.post('/', validate(schemas.historyEntry), async (req, res) => {
   try {
+    const { healthScore, tablesFound, issuesCount, recommendationsCount, sqlPreview, dialect, fullResult, deviceId } = req.body;
     const entry = {
       id: uuidv4(),
       timestamp: new Date().toISOString(),
-      ...req.body,
+      healthScore,
+      tablesFound,
+      issuesCount,
+      recommendationsCount,
+      sqlPreview,
+      dialect,
+      fullResult,
+      deviceId,
     };
     await db.addHistory(entry);
     sendSuccess(res, entry, 201);

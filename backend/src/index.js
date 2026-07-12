@@ -1,5 +1,5 @@
 const app = require('./app');
-const { exec } = require('child_process');
+const { spawn } = require('child_process');
 const logger = require('./shared/utils/logger');
 
 const PORT = process.env.PORT || 5000;
@@ -27,13 +27,17 @@ async function start() {
     });
     if (isProduction && process.env.AUTO_OPEN === 'true') {
       const url = process.env.BACKEND_URL;
-      const plat = process.platform;
-      if (plat === 'win32') {
-        exec(`start ${url}`, (err) => { if (err) logger.warn('Auto-open failed', { err: err.message }); });
-      } else if (plat === 'darwin') {
-        exec(`open ${url}`, (err) => { if (err) logger.warn('Auto-open failed', { err: err.message }); });
+      if (!url) {
+        logger.warn('AUTO_OPEN set but BACKEND_URL is missing');
       } else {
-        exec(`xdg-open ${url}`, (err) => { if (err) logger.warn('Auto-open failed', { err: err.message }); });
+        const plat = process.platform;
+        const cmd = plat === 'win32' ? 'start' : plat === 'darwin' ? 'open' : 'xdg-open';
+        try {
+          const child = spawn(cmd, [url], { detached: true, stdio: 'ignore' });
+          child.unref();
+        } catch (err) {
+          logger.warn('Auto-open failed', { err: err.message });
+        }
       }
     }
   });
