@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { Upload, Play, RotateCcw, ChevronDown, Loader2, ClipboardPaste } from 'lucide-react';
 import type { ExampleSchema } from '../../../shared/types/schema';
@@ -16,7 +16,24 @@ export default function SQLEditor({ value, onChange, onAnalyze, onUpload, isLoad
   const [dragging, setDragging] = useState(false);
   const [pasteFailed, setPasteFailed] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const examplesRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
+
+  useEffect(() => {
+    if (!showExamples) return;
+    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setShowExamples(false); };
+    const handleClick = (e: MouseEvent) => {
+      if (examplesRef.current && !examplesRef.current.contains(e.target as Node)) {
+        setShowExamples(false);
+      }
+    };
+    document.addEventListener('keydown', handleKey);
+    document.addEventListener('mousedown', handleClick);
+    return () => {
+      document.removeEventListener('keydown', handleKey);
+      document.removeEventListener('mousedown', handleClick);
+    };
+  }, [showExamples]);
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault(); setDragging(false);
@@ -98,7 +115,7 @@ export default function SQLEditor({ value, onChange, onAnalyze, onUpload, isLoad
         </button>
 
         {/* Examples dropdown */}
-        <div style={{ position: 'relative' }}>
+        <div style={{ position: 'relative' }} ref={examplesRef}>
           <button onClick={() => setShowExamples(s => !s)} style={{
             display: 'flex', alignItems: 'center', gap: 5,
             padding: '4px 10px', fontSize: 12, fontWeight: 500,

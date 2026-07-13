@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Sparkles, Info, KeyRound, ExternalLink } from 'lucide-react';
 import { getAIConfig, clearAIConfig } from '../../shared/services/apiConfig';
@@ -9,7 +9,24 @@ export default function BringYourOwnAi() {
   const [showAiInfo, setShowAiInfo] = useState(false);
   const [, forceUpdate] = useState(0);
   const aiConfig = getAIConfig();
+  const aiInfoRef = useRef<HTMLDivElement>(null);
   const handleRemoveKey = () => { clearAIConfig(); forceUpdate(v => v + 1); };
+
+  useEffect(() => {
+    if (!showAiInfo) return;
+    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setShowAiInfo(false); };
+    const handleClick = (e: MouseEvent) => {
+      if (aiInfoRef.current && !aiInfoRef.current.contains(e.target as Node)) {
+        setShowAiInfo(false);
+      }
+    };
+    document.addEventListener('keydown', handleKey);
+    document.addEventListener('mousedown', handleClick);
+    return () => {
+      document.removeEventListener('keydown', handleKey);
+      document.removeEventListener('mousedown', handleClick);
+    };
+  }, [showAiInfo]);
 
   return (
     <section style={{ ...S.section, paddingBottom: 60 }}>
@@ -37,7 +54,7 @@ export default function BringYourOwnAi() {
             </span>
           </div>
           {showAiInfo && (
-            <div style={{
+            <div ref={aiInfoRef} style={{
               marginTop: 10, padding: '12px 14px', borderRadius: 8,
               background: 'rgba(124,106,247,0.06)', border: '1px solid rgba(124,106,247,0.15)',
               fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.7,

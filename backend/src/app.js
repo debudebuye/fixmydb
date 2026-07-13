@@ -28,6 +28,11 @@ const isProduction = process.env.NODE_ENV === 'production';
 // ── Trust proxy (rate limiter + logging need real IP) ──
 app.set('trust proxy', 1);
 
+// ── HTTPS enforcement (production only, behind reverse proxy) ──
+if (isProduction) {
+  app.use(require('./shared/middleware/httpsEnforcement'));
+}
+
 // ── Security ──
 app.use(helmet(isProduction ? {} : { contentSecurityPolicy: false }));
 

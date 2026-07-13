@@ -29,6 +29,13 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [isOpen, onClose]);
+
   return (
     <>
       <div className={`mobile-overlay${isOpen ? ' open' : ''}`}
