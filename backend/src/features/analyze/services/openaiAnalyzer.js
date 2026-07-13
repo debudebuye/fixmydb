@@ -1,3 +1,4 @@
+/* globals URL */
 const OpenAI = require('openai');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const logger = require('../../../shared/utils/logger');

@@ -89,7 +89,7 @@ router.post('/', upload.array('files', 10), async (req, res) => {
       fileCount: results.length,
       errorCount: errors.length,
     });
-  } catch (err) {
+  } catch {
     sendError(res, 500, 'UPLOAD_FAILED', 'Failed to process upload');
   }
 });
