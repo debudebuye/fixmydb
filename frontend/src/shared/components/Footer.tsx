@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Zap, Coffee, Copy, Check, Download, ShieldAlert } from 'lucide-react';
+import { trackDownloadEvent } from '../services/api';
+import { getDeviceId } from '../services/device';
 
 export default function Footer() {
   const [copied, setCopied] = useState(false);
@@ -28,6 +30,7 @@ export default function Footer() {
       <div style={{ marginTop: 10 }}>
         <a href="https://github.com/debudebuye/fixmydb/releases"
           target="_blank" rel="noopener noreferrer"
+          onClick={() => trackDownloadEvent(getDeviceId(), 'desktop-app')}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 5,
             fontSize: 11, color: '#7c6af7', fontWeight: 500, textDecoration: 'none',

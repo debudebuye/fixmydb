@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Database, Zap, Sparkles, Shield, Sun, Moon, Download, GitFork, X, ShieldAlert } from 'lucide-react';
 import { useTheme } from '../theme';
+import { trackDownloadEvent } from '../services/api';
+import { getDeviceId } from '../services/device';
 
 interface MobileDrawerProps {
   isOpen: boolean;
@@ -104,6 +106,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
 
         <a href="https://github.com/debudebuye/fixmydb/releases"
           target="_blank" rel="noopener noreferrer"
+          onClick={() => trackDownloadEvent(getDeviceId(), 'desktop-app')}
           style={{
             display: 'flex', alignItems: 'center', gap: 10,
             padding: '10px 12px', borderRadius: 7, fontSize: 14, fontWeight: 500,
