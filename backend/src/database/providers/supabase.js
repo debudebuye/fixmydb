@@ -93,7 +93,7 @@ async function trackDownload(deviceId, type = 'sql') {
 async function getStats() {
   const [analysesResult, downloadsResult] = await Promise.all([
     client.from('analyses').select('analyses_id, device_id, created_at').order('created_at', { ascending: false }),
-    client.from('downloads').select('id', { count: 'exact', head: true }),
+    client.from('downloads').select('id', { count: 'exact', head: true }).eq('type', 'desktop-app'),
   ]);
 
   if (analysesResult.error) {

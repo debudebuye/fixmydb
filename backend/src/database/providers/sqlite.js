@@ -157,7 +157,7 @@ async function trackDownload(deviceId, type = 'sql') {
 async function getStats() {
   const uniqueRows = selectAll('SELECT DISTINCT device_id FROM analyses WHERE device_id IS NOT NULL').rows;
   const totalRows = selectAll('SELECT COUNT(*) AS count FROM analyses').rows;
-  const downloadRows = selectAll('SELECT COUNT(*) AS count FROM downloads').rows;
+  const downloadRows = selectAll("SELECT COUNT(*) AS count FROM downloads WHERE type = 'desktop-app'").rows;
   const recentRows = selectAll('SELECT analyses_id, device_id, created_at FROM analyses ORDER BY created_at DESC').rows;
 
   return {

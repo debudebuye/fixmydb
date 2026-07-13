@@ -69,7 +69,7 @@ async function getStats() {
   const [usersResult, totalResult, downloadsResult, recentResult] = await Promise.all([
     pool.query('SELECT COUNT(DISTINCT device_id) AS count FROM analyses WHERE device_id IS NOT NULL'),
     pool.query('SELECT COUNT(*) AS count FROM analyses'),
-    pool.query('SELECT COUNT(*) AS count FROM downloads'),
+    pool.query("SELECT COUNT(*) AS count FROM downloads WHERE type = 'desktop-app'"),
     pool.query('SELECT analyses_id, device_id, created_at FROM analyses ORDER BY created_at DESC'),
   ]);
 
