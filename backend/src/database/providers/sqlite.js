@@ -157,13 +157,13 @@ async function trackDownload(deviceId, type = 'sql') {
 async function getStats() {
   const uniqueRows = selectAll('SELECT DISTINCT device_id FROM analyses WHERE device_id IS NOT NULL').rows;
   const totalRows = selectAll('SELECT COUNT(*) AS count FROM analyses').rows;
-  const downloadRows = selectAll("SELECT COUNT(*) AS count FROM downloads WHERE type = 'desktop-app'").rows;
+  const downloadRows = selectAll("SELECT DISTINCT device_id FROM downloads WHERE type = 'desktop-app' AND device_id IS NOT NULL").rows;
   const recentRows = selectAll('SELECT analyses_id, device_id, created_at FROM analyses ORDER BY created_at DESC').rows;
 
   return {
     totalUsers: uniqueRows.length,
     totalSchemasProcessed: parseInt(totalRows[0]?.count) || 0,
-    totalDownloads: parseInt(downloadRows[0]?.count) || 0,
+    totalDownloads: downloadRows.length,
     recentAnalyses: recentRows.map(row => ({
       analysesId: row.analyses_id,
       deviceId: row.device_id,

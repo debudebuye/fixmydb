@@ -93,7 +93,7 @@ async function trackDownload(deviceId, type = 'sql') {
 async function getStats() {
   const [analysesResult, downloadsResult] = await Promise.all([
     client.from('analyses').select('analyses_id, device_id, created_at').order('created_at', { ascending: false }),
-    client.from('downloads').select('id', { count: 'exact', head: true }).eq('type', 'desktop-app'),
+    client.from('downloads').select('device_id').eq('type', 'desktop-app'),
   ]);
 
   if (analysesResult.error) {
@@ -111,10 +111,11 @@ async function getStats() {
 
   const data = analysesResult.data || [];
   const uniqueDevices = new Set(data.filter(r => r.device_id).map(r => r.device_id));
+  const uniqueDownloaders = new Set((downloadsResult.data || []).filter(r => r.device_id).map(r => r.device_id));
   return {
     totalUsers: uniqueDevices.size,
     totalSchemasProcessed: data.length,
-    totalDownloads: downloadsResult.count || 0,
+    totalDownloads: downloadsResult.error ? 0 : uniqueDownloaders.size,
     recentAnalyses: data.map(row => ({
       analysesId: row.analyses_id,
       deviceId: row.device_id,
