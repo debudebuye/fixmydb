@@ -28,11 +28,7 @@ export async function getHistory(): Promise<HistoryEntry[]> {
 /** Save an analysis result to the backend history. Returns false if the backend is unreachable. */
 export async function addToHistory(entry: Omit<HistoryEntry, 'id' | 'timestamp'> & { fullResult?: AnalysisResult }): Promise<boolean> {
   try {
-    await api.post('/history', {
-      ...entry,
-      id: Date.now().toString(36),
-      timestamp: new Date().toISOString(),
-    });
+    await api.post('/history', entry);
     return true;
   } catch (err) {
     if (import.meta.env.DEV) console.warn('[history] addToHistory failed:', err);
