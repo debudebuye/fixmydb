@@ -27,7 +27,7 @@ export default function ResultsDashboard({ result }: Props) {
 
   const handleTabKeyDown = useCallback((e: React.KeyboardEvent) => {
     const currentIndex = TABS.findIndex(t => t.id === active);
-    let nextIndex = currentIndex;
+    let nextIndex;
 
     if (e.key === 'ArrowRight') {
       nextIndex = (currentIndex + 1) % TABS.length;
