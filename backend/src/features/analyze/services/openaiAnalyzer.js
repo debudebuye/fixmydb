@@ -2,16 +2,21 @@ const OpenAI = require('openai');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const logger = require('../../../shared/utils/logger');
 
-const ALLOWED_BASE_URLS = [
-  'https://api.openai.com',
-  'https://api.groq.com',
-  'https://openrouter.ai',
-  'https://generativelanguage.googleapis.com',
+const ALLOWED_HOSTNAMES = [
+  'api.openai.com',
+  'api.groq.com',
+  'openrouter.ai',
+  'generativelanguage.googleapis.com',
 ];
 
 function isAllowedBaseURL(url) {
   if (!url) return true;
-  return ALLOWED_BASE_URLS.some(allowed => url.startsWith(allowed));
+  try {
+    const { hostname } = new URL(url);
+    return ALLOWED_HOSTNAMES.includes(hostname);
+  } catch {
+    return false;
+  }
 }
 
 const promptTemplate = `You are an expert database architect. Analyze this SQL schema and provide specific recommendations.
