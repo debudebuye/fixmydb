@@ -1,3 +1,5 @@
+import { memo } from 'react';
+
 /** Colored severity badge — red for HIGH, yellow for MED, blue for LOW. */
 interface Props { severity: 'high' | 'medium' | 'low'; }
 
@@ -8,6 +10,8 @@ const MAP = {
 };
 const LABEL = { high: 'HIGH', medium: 'MED', low: 'LOW' };
 
-export default function IssueBadge({ severity }: Props) {
+function IssueBadgeInner({ severity }: Props) {
   return <span className={MAP[severity]}>{LABEL[severity]}</span>;
 }
+
+export default memo(IssueBadgeInner);

@@ -19,7 +19,8 @@ export async function getHistory(): Promise<HistoryEntry[]> {
   try {
     const { data } = await api.get<HistoryEntry[]>('/history');
     return data;
-  } catch {
+  } catch (err) {
+    if (import.meta.env.DEV) console.warn('[history] getHistory failed:', err);
     return [];
   }
 }
@@ -33,17 +34,21 @@ export async function addToHistory(entry: Omit<HistoryEntry, 'id' | 'timestamp'>
       timestamp: new Date().toISOString(),
     });
     return true;
-  } catch {
+  } catch (err) {
+    if (import.meta.env.DEV) console.warn('[history] addToHistory failed:', err);
     return false;
   }
 }
 
-/** Delete all saved history entries from the backend. Returns false on failure. */
-export async function clearHistory(): Promise<boolean> {
+/** Delete all saved history entries from the backend. Returns 'success', 'forbidden' (production), or 'error'. */
+export async function clearHistory(): Promise<'success' | 'forbidden' | 'error'> {
   try {
     await api.delete('/history');
-    return true;
-  } catch {
-    return false;
+    return 'success';
+  } catch (err: unknown) {
+    const status = (err as { response?: { status?: number } })?.response?.status;
+    if (status === 403) return 'forbidden';
+    if (import.meta.env.DEV) console.warn('[history] clearHistory failed:', err);
+    return 'error';
   }
 }

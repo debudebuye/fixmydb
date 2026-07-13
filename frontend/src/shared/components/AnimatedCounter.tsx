@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { memo, useState, useEffect, useRef } from 'react';
 
 /** Counts from 0 to `value` with eased animation. Optional `formatter` for locale-aware display. */
 interface Props {
@@ -7,7 +7,7 @@ interface Props {
   formatter?: (n: number) => string;
 }
 
-export default function AnimatedCounter({ value, duration = 1200, formatter }: Props) {
+function AnimatedCounterInner({ value, duration = 1200, formatter }: Props) {
   const [display, setDisplay] = useState(0);
   const prevRef = useRef(0);
   const rafRef = useRef<number>(0);
@@ -41,3 +41,5 @@ export default function AnimatedCounter({ value, duration = 1200, formatter }: P
   const fmt = formatter || ((n: number) => n.toLocaleString());
   return <>{fmt(display)}</>;
 }
+
+export default memo(AnimatedCounterInner);

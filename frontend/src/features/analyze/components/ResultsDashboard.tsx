@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { LayoutDashboard, ShieldCheck, Zap, GitBranch, Network, Code2 } from 'lucide-react';
 import type { AnalysisResult } from '../../../shared/types/schema';
 import OverviewTab from './OverviewTab';
@@ -23,6 +23,25 @@ type TabId = typeof TABS[number]['id'];
 
 export default function ResultsDashboard({ result }: Props) {
   const [active, setActive] = useState<TabId>('overview');
+  const tabListRef = useRef<HTMLDivElement>(null);
+
+  const handleTabKeyDown = useCallback((e: React.KeyboardEvent) => {
+    const currentIndex = TABS.findIndex(t => t.id === active);
+    let nextIndex = currentIndex;
+
+    if (e.key === 'ArrowRight') {
+      nextIndex = (currentIndex + 1) % TABS.length;
+    } else if (e.key === 'ArrowLeft') {
+      nextIndex = (currentIndex - 1 + TABS.length) % TABS.length;
+    } else {
+      return;
+    }
+
+    e.preventDefault();
+    setActive(TABS[nextIndex].id);
+    const buttons = tabListRef.current?.querySelectorAll('[role="tab"]');
+    (buttons?.[nextIndex] as HTMLElement)?.focus();
+  }, [active]);
 
   const badge = (id: TabId) => {
     if (id === 'normalization') return result.normalization.violations.length || null;
@@ -34,7 +53,9 @@ export default function ResultsDashboard({ result }: Props) {
   return (
     <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden' }}>
       {/* Tab bar */}
-      <div style={{
+      <div ref={tabListRef} role="tablist" aria-label="Analysis results"
+        onKeyDown={handleTabKeyDown}
+        style={{
         display: 'flex', overflowX: 'auto',
         borderBottom: '1px solid var(--border)',
         background: 'var(--surface-1-alt)',

@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const { sendSuccess, sendError } = require('../../shared/middleware/response');
+const logger = require('../../shared/utils/logger');
 
 const router = express.Router();
 
@@ -73,7 +74,9 @@ router.post('/', upload.array('files', 10), async (req, res) => {
       } catch {
         errors.push({ filename: file.originalname, error: 'Failed to read file' });
       } finally {
-        try { await fs.promises.unlink(file.path); } catch { /* already cleaned up */ }
+        try { await fs.promises.unlink(file.path); } catch (unlinkErr) {
+          if (unlinkErr.code !== 'ENOENT') logger.warn('Failed to clean up upload file', { path: file.path, err: unlinkErr.message });
+        }
       }
     }
 
@@ -89,7 +92,8 @@ router.post('/', upload.array('files', 10), async (req, res) => {
       fileCount: results.length,
       errorCount: errors.length,
     });
-  } catch {
+  } catch (err) {
+    logger.error('Upload processing error', { err: err.message, requestId: res.locals.requestId });
     sendError(res, 500, 'UPLOAD_FAILED', 'Failed to process upload');
   }
 });

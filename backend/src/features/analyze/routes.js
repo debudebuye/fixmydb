@@ -45,7 +45,9 @@ router.post('/', validate(schemas.analyze), async (req, res) => {
       aiError = (aiConfig?.apiKey || apiKey) ? err.message : null;
     }
 
-    trackAnalysis(deviceId).catch(() => {});
+    trackAnalysis(deviceId).catch((err) => {
+      logger.warn('Analytics tracking failed', { err: err.message, requestId: res.locals.requestId });
+    });
 
     const result = {
       meta: {

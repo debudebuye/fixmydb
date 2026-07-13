@@ -5,9 +5,46 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="application-name" content="FixMyDB" />
-    <meta name="description" content="FixMyDB - open source database schema reviewer" />
+    <meta name="description" content="FixMyDB - open source database schema reviewer. Paste SQL, get instant health score, normalization report, index recommendations, and ER diagram." />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' http://localhost:5000 http://localhost:5173 https://api.fixmydb.dev https://api.openai.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob: https://cdn.jsdelivr.net; frame-src 'self';" />
-    <title>FixMyDB</title>
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="FixMyDB - Database Schema Reviewer for Developers" />
+    <meta property="og:description" content="Paste SQL, get an instant health score, normalization report, index recommendations, and ER diagram. No sign-up needed." />
+    <meta property="og:url" content="https://fixmydb.dev" />
+    <meta property="og:site_name" content="FixMyDB" />
+    <meta property="og:image" content="https://fixmydb.dev/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="FixMyDB - Database Schema Reviewer for Developers" />
+    <meta name="twitter:description" content="Paste SQL, get an instant health score, normalization report, index recommendations, and ER diagram." />
+    <meta name="twitter:image" content="https://fixmydb.dev/og-image.png" />
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://fixmydb.dev" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "FixMyDB",
+      "url": "https://fixmydb.dev",
+      "description": "AI-powered database schema reviewer. Paste SQL, get instant health score, normalization report, index recommendations, and ER diagram.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "featureList": ["Schema health scoring", "Normalization analysis", "Index recommendations", "ER diagram generation", "AI-enhanced analysis"],
+      "license": "https://opensource.org/licenses/MIT",
+      "sameAs": ["https://github.com/debudebuye/fixmydb"]
+    }
+    </script>
+
+    <title>FixMyDB - Database Schema Reviewer for Developers</title>
   </head>
   <body>
     <div id="root"></div>

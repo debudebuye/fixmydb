@@ -5,6 +5,8 @@ const { schemas, validate } = require('../../shared/middleware/validate');
 const { sendSuccess, sendError, sendPaginated } = require('../../shared/middleware/response');
 const logger = require('../../shared/utils/logger');
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 const router = express.Router();
 
 router.get('/', async (req, res) => {
@@ -62,14 +64,17 @@ router.post('/', validate(schemas.historyEntry), async (req, res) => {
   }
 });
 
-router.delete('/', async (req, res) => {
-  try {
-    await db.clearHistory();
-    sendSuccess(res, { cleared: true });
-  } catch (err) {
-    logger.error('History clear error', { err: err.message, requestId: res.locals.requestId });
-    sendError(res, 500, 'HISTORY_CLEAR_FAILED', 'Failed to clear history');
+router.delete('/', (req, res) => {
+  if (isProduction) {
+    return sendError(res, 403, 'FORBIDDEN', 'History deletion is disabled in production');
   }
+
+  db.clearHistory()
+    .then(() => sendSuccess(res, { cleared: true }))
+    .catch(err => {
+      logger.error('History clear error', { err: err.message, requestId: res.locals.requestId });
+      sendError(res, 500, 'HISTORY_CLEAR_FAILED', 'Failed to clear history');
+    });
 });
 
 module.exports = router;

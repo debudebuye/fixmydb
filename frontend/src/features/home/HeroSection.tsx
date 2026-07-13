@@ -1,9 +1,10 @@
+import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Terminal } from 'lucide-react';
 
 const S = { section: { maxWidth: 1100, margin: '0 auto', padding: '0 24px' } as React.CSSProperties };
 
-export default function HeroSection() {
+function HeroSectionInner() {
   return (
     <section className="dot-grid" style={{ paddingTop: 80, paddingBottom: 60, position: 'relative', overflow: 'hidden' }}>
       <div style={{
@@ -53,3 +54,5 @@ export default function HeroSection() {
     </section>
   );
 }
+
+export default memo(HeroSectionInner);

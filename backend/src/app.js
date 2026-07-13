@@ -34,7 +34,9 @@ if (isProduction) {
 }
 
 // ── Security ──
-app.use(helmet(isProduction ? {} : { contentSecurityPolicy: false }));
+app.use(helmet(isProduction ? {
+  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+} : { contentSecurityPolicy: false }));
 
 // ── Request ID (every request gets a unique ID) ──
 app.use(requestId);
