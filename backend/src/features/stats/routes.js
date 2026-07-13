@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getStats, trackDownload } = require('../../shared/utils/analyticsStore');
+const { getStats, trackDownload } = require('../../database');
 const { sendSuccess, sendError } = require('../../shared/middleware/response');
 const logger = require('../../shared/utils/logger');
 

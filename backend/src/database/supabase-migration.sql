@@ -1,7 +1,14 @@
 -- FixMyDB Supabase Schema Migration
 -- Run this in your Supabase SQL editor to set up tables
 
--- History table (replaces local SQLite)
+-- Migration tracking (must be first)
+CREATE TABLE IF NOT EXISTS public._migrations (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL UNIQUE,
+  applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- History table
 CREATE TABLE IF NOT EXISTS public.history (
   id TEXT PRIMARY KEY,
   timestamp TEXT NOT NULL,

@@ -5,23 +5,19 @@ const logger = require('./shared/utils/logger');
 const PORT = process.env.PORT || 5000;
 const isProduction = process.env.NODE_ENV === 'production';
 
-const { initDatabase, closeDb, provider } = require('./database');
-const { initSchema, enabled: supabaseEnabled } = require('./shared/utils/supabase');
+const { initDatabase, closeDb, getProviderName } = require('./database');
 
 async function start() {
   try {
     await initDatabase();
-    if (supabaseEnabled) {
-      await initSchema();
-      logger.info('Supabase schema initialized');
-    }
+    logger.info('Database initialized', { provider: getProviderName() });
   } catch (err) {
     logger.error('Database init failed', { err: err.message });
   }
 
   const server = app.listen(PORT, () => {
     logger.info('Server started', {
-      provider,
+      provider: getProviderName(),
       url: process.env.BACKEND_URL,
       env: process.env.NODE_ENV,
     });
