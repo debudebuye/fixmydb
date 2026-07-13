@@ -23,7 +23,7 @@ router.post('/download', async (req, res) => {
   try {
     const deviceId = typeof req.body?.deviceId === 'string' ? req.body.deviceId : null;
     const type = typeof req.body?.type === 'string' ? req.body.type : 'sql';
-    trackDownload(deviceId, type).catch((err) => logger.warn('Download track failed', { err: err.message }));
+    await trackDownload(deviceId, type);
     sendSuccess(res, { tracked: true }, 201);
   } catch (err) {
     logger.error('Download tracking error', { err: err.message, requestId: res.locals.requestId });

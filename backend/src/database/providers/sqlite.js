@@ -142,11 +142,16 @@ async function trackAnalysis(deviceId) {
 
 async function trackDownload(deviceId, type = 'sql') {
   const clean = deviceId && typeof deviceId === 'string' && deviceId.length > 5 ? deviceId : null;
-  runQuery(
-    `INSERT INTO downloads (device_id, type, created_at) VALUES (?, ?, datetime('now'))`,
-    [clean, type]
-  );
-  scheduleSave();
+  try {
+    runQuery(
+      `INSERT INTO downloads (device_id, type, created_at) VALUES (?, ?, datetime('now'))`,
+      [clean, type]
+    );
+    scheduleSave();
+  } catch (err) {
+    logger.error('SQLite download track error', { err: err.message });
+    throw err;
+  }
 }
 
 async function getStats() {

@@ -84,7 +84,10 @@ async function trackDownload(deviceId, type = 'sql') {
     type,
     created_at: new Date().toISOString(),
   }]);
-  if (error) logger.error('Supabase download track error', { err: error.message });
+  if (error) {
+    logger.error('Supabase download track error', { err: error.message, code: error.code });
+    throw new Error(`Download track failed: ${error.message}`);
+  }
 }
 
 async function getStats() {
@@ -93,18 +96,26 @@ async function getStats() {
     client.from('downloads').select('id', { count: 'exact', head: true }),
   ]);
 
-  const { data, error } = analysesResult;
-  if (error) {
-    logger.error('Supabase stats fetch error', { err: error.message });
+  if (analysesResult.error) {
+    logger.error('Supabase stats fetch error (analyses)', { err: analysesResult.error.message, code: analysesResult.error.code });
     return { totalUsers: 0, totalSchemasProcessed: 0, totalDownloads: 0, recentAnalyses: [] };
   }
 
-  const uniqueDevices = new Set((data || []).filter(r => r.device_id).map(r => r.device_id));
+  if (downloadsResult.error) {
+    logger.error('Supabase stats fetch error (downloads) — table may be missing. Run supabase-migration.sql', {
+      err: downloadsResult.error.message,
+      code: downloadsResult.error.code,
+      file: 'backend/src/database/supabase-migration.sql',
+    });
+  }
+
+  const data = analysesResult.data || [];
+  const uniqueDevices = new Set(data.filter(r => r.device_id).map(r => r.device_id));
   return {
     totalUsers: uniqueDevices.size,
-    totalSchemasProcessed: (data || []).length,
+    totalSchemasProcessed: data.length,
     totalDownloads: downloadsResult.count || 0,
-    recentAnalyses: (data || []).map(row => ({
+    recentAnalyses: data.map(row => ({
       analysesId: row.analyses_id,
       deviceId: row.device_id,
       createdAt: row.created_at,
