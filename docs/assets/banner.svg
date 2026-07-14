@@ -1,118 +1,178 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0f0c29"/>
-      <stop offset="50%" style="stop-color:#302b63"/>
-      <stop offset="100%" style="stop-color:#24243e"/>
+      <stop offset="0%" style="stop-color:#0a0a0f"/>
+      <stop offset="50%" style="stop-color:#111118"/>
+      <stop offset="100%" style="stop-color:#0a0a0f"/>
     </linearGradient>
     <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#667eea"/>
-      <stop offset="100%" style="stop-color:#764ba2"/>
+      <stop offset="0%" style="stop-color:#7c6af7"/>
+      <stop offset="100%" style="stop-color:#a78bfa"/>
     </linearGradient>
-    <linearGradient id="glow" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#667eea;stop-opacity:0.3"/>
-      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:0"/>
+    <linearGradient id="accentGlow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c6af7;stop-opacity:0.25"/>
+      <stop offset="100%" style="stop-color:#7c6af7;stop-opacity:0"/>
+    </linearGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#10b981"/>
+      <stop offset="100%" style="stop-color:#06b6d4"/>
     </linearGradient>
     <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#667eea" flood-opacity="0.3"/>
+      <feDropShadow dx="0" dy="4" stdDeviation="12" flood-color="#7c6af7" flood-opacity="0.25"/>
     </filter>
     <filter id="textShadow">
-      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.5"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="6" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
+    <filter id="glowFilter">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
     </filter>
   </defs>
 
   <!-- Background -->
   <rect width="1280" height="640" fill="url(#bg)"/>
 
-  <!-- Decorative grid lines -->
-  <g opacity="0.05" stroke="#667eea" stroke-width="1">
-    <line x1="0" y1="128" x2="1280" y2="128"/>
-    <line x1="0" y1="256" x2="1280" y2="256"/>
-    <line x1="0" y1="384" x2="1280" y2="384"/>
-    <line x1="0" y1="512" x2="1280" y2="512"/>
-    <line x1="256" y1="0" x2="256" y2="640"/>
-    <line x1="512" y1="0" x2="512" y2="640"/>
-    <line x1="768" y1="0" x2="768" y2="640"/>
-    <line x1="1024" y1="0" x2="1024" y2="640"/>
+  <!-- Subtle grid -->
+  <g opacity="0.04" stroke="#7c6af7" stroke-width="0.5">
+    <line x1="0" y1="160" x2="1280" y2="160"/>
+    <line x1="0" y1="320" x2="1280" y2="320"/>
+    <line x1="0" y1="480" x2="1280" y2="480"/>
+    <line x1="320" y1="0" x2="320" y2="640"/>
+    <line x1="640" y1="0" x2="640" y2="640"/>
+    <line x1="960" y1="0" x2="960" y2="640"/>
   </g>
 
-  <!-- Glowing orbs -->
-  <circle cx="200" cy="300" r="200" fill="url(#glow)" opacity="0.4"/>
-  <circle cx="1080" cy="200" r="250" fill="url(#glow)" opacity="0.3"/>
-  <circle cx="640" cy="500" r="180" fill="url(#glow)" opacity="0.2"/>
+  <!-- Glowing orbs (matching website accent) -->
+  <circle cx="180" cy="280" r="220" fill="url(#accentGlow)" opacity="0.35"/>
+  <circle cx="1100" cy="180" r="280" fill="url(#accentGlow)" opacity="0.25"/>
+  <circle cx="640" cy="520" r="200" fill="url(#accentGlow)" opacity="0.15"/>
 
-  <!-- Database icon (left side) -->
-  <g transform="translate(120, 180)" filter="url(#shadow)">
-    <!-- Database cylinder -->
-    <ellipse cx="80" cy="40" rx="80" ry="30" fill="none" stroke="url(#accent)" stroke-width="3" opacity="0.8"/>
-    <rect x="0" y="40" width="160" height="160" fill="none" stroke="url(#accent)" stroke-width="3" opacity="0.8"/>
-    <ellipse cx="80" cy="200" rx="80" ry="30" fill="none" stroke="url(#accent)" stroke-width="3" opacity="0.8"/>
-    <!-- DB lines -->
-    <ellipse cx="80" cy="100" rx="80" ry="30" fill="none" stroke="url(#accent)" stroke-width="2" opacity="0.4"/>
-    <ellipse cx="80" cy="150" rx="80" ry="30" fill="none" stroke="url(#accent)" stroke-width="2" opacity="0.4"/>
-    <!-- Checkmark -->
-    <path d="M50 120 L70 140 L110 90" fill="none" stroke="#4ade80" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- ── Left: Database icon with checkmark ── -->
+  <g transform="translate(60, 170)" filter="url(#shadow)">
+    <!-- DB cylinder -->
+    <ellipse cx="90" cy="45" rx="90" ry="35" fill="none" stroke="#7c6af7" stroke-width="2.5" opacity="0.7"/>
+    <rect x="0" y="45" width="180" height="180" rx="0" fill="none" stroke="#7c6af7" stroke-width="2.5" opacity="0.7"/>
+    <ellipse cx="90" cy="225" rx="90" ry="35" fill="none" stroke="#7c6af7" stroke-width="2.5" opacity="0.7"/>
+    <!-- Inner lines -->
+    <ellipse cx="90" cy="115" rx="90" ry="35" fill="none" stroke="#7c6af7" stroke-width="1.5" opacity="0.3"/>
+    <ellipse cx="90" cy="170" rx="90" ry="35" fill="none" stroke="#7c6af7" stroke-width="1.5" opacity="0.3"/>
+    <!-- Green checkmark -->
+    <path d="M55 140 L80 165 L130 105" fill="none" stroke="#10b981" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" filter="url(#glowFilter)"/>
   </g>
 
-  <!-- Main title -->
-  <text x="640" y="220" text-anchor="middle" font-family="'Segoe UI', system-ui, -apple-system, sans-serif" font-size="72" font-weight="800" fill="white" filter="url(#textShadow)">
+  <!-- ── Center: Title + tagline ── -->
+  <text x="640" y="195" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif" font-size="76" font-weight="800" fill="#f1f5f9" filter="url(#textShadow)">
     FixMyDB
   </text>
-
-  <!-- Accent line -->
-  <rect x="540" y="240" width="200" height="4" rx="2" fill="url(#accent)"/>
-
-  <!-- Tagline -->
-  <text x="640" y="290" text-anchor="middle" font-family="'Segoe UI', system-ui, -apple-system, sans-serif" font-size="28" fill="#a5b4fc" font-weight="400" letter-spacing="2">
+  <rect x="520" y="212" width="240" height="4" rx="2" fill="url(#accent)"/>
+  <text x="640" y="255" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="24" fill="#94a3b8" font-weight="400" letter-spacing="3">
     AI-POWERED DATABASE SCHEMA REVIEWER
   </text>
 
-  <!-- Feature pills -->
-  <g transform="translate(640, 340)" text-anchor="middle">
-    <rect x="-240" y="0" width="120" height="32" rx="16" fill="rgba(102,126,234,0.2)" stroke="#667eea" stroke-width="1"/>
-    <text x="-180" y="21" font-family="'Segoe UI', system-ui, sans-serif" font-size="13" fill="#c4b5fd" font-weight="500">Health Score</text>
-
-    <rect x="-100" y="0" width="120" height="32" rx="16" fill="rgba(102,126,234,0.2)" stroke="#667eea" stroke-width="1"/>
-    <text x="-40" y="21" font-family="'Segoe UI', system-ui, sans-serif" font-size="13" fill="#c4b5fd" font-weight="500">ER Diagrams</text>
-
-    <rect x="40" y="0" width="130" height="32" rx="16" fill="rgba(102,126,234,0.2)" stroke="#667eea" stroke-width="1"/>
-    <text x="105" y="21" font-family="'Segoe UI', system-ui, sans-serif" font-size="13" fill="#c4b5fd" font-weight="500">AI Analysis</text>
-
-    <rect x="190" y="0" width="140" height="32" rx="16" fill="rgba(102,126,234,0.2)" stroke="#667eea" stroke-width="1"/>
-    <text x="260" y="21" font-family="'Segoe UI', system-ui, sans-serif" font-size="13" fill="#c4b5fd" font-weight="500">SQL Fix Scripts</text>
+  <!-- ── "No sign-up needed" badge ── -->
+  <g transform="translate(640, 278)" text-anchor="middle">
+    <rect x="-72" y="0" width="144" height="26" rx="13" fill="rgba(16,185,129,0.12)" stroke="#10b981" stroke-width="1"/>
+    <text x="0" y="17" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="12" fill="#10b981" font-weight="600" letter-spacing="0.5">FREE &amp; OPEN SOURCE</text>
   </g>
 
-  <!-- Code snippet decoration (bottom left) -->
-  <g transform="translate(80, 430)" opacity="0.6">
-    <rect width="320" height="140" rx="8" fill="rgba(0,0,0,0.4)" stroke="rgba(102,126,234,0.3)" stroke-width="1"/>
-    <text x="16" y="28" font-family="'Cascadia Code', 'Fira Code', monospace" font-size="13" fill="#667eea">CREATE TABLE</text>
-    <text x="16" y="48" font-family="'Cascadia Code', 'Fira Code', monospace" font-size="13" fill="#e2e8f0">  users (</text>
-    <text x="16" y="68" font-family="'Cascadia Code', 'Fira Code', monospace" font-size="13" fill="#c4b5fd">    id</text>
-    <text x="56" y="68" font-family="'Cascadia Code', 'Fira Code', monospace" font-size="13" fill="#e2e8f0"> SERIAL </text>
-    <text x="126" y="68" font-family="'Cascadia Code', 'Fira Code', monospace" font-size="13" fill="#4ade80">PRIMARY KEY</text>
-    <text x="16" y="88" font-family="'Cascadia Code', 'Fira Code', monospace" font-size="13" fill="#c4b5fd">    email</text>
-    <text x="80" y="88" font-family="'Cascadia Code', 'Fira Code', monospace" font-size="13" fill="#e2e8f0"> VARCHAR(255)</text>
-    <text x="16" y="108" font-family="'Cascadia Code', 'Fira Code', monospace" font-size="13" fill="#e2e8f0">);</text>
+  <!-- ── Feature grid (3 columns x 2 rows) ── -->
+  <!-- Row 1 -->
+  <g transform="translate(320, 330)">
+    <!-- Health Score -->
+    <rect x="0" y="0" width="180" height="52" rx="10" fill="rgba(124,106,247,0.08)" stroke="#252533" stroke-width="1"/>
+    <circle cx="28" cy="26" r="14" fill="none" stroke="#7c6af7" stroke-width="2"/>
+    <text x="28" y="31" text-anchor="middle" font-family="'Inter', sans-serif" font-size="11" fill="#7c6af7" font-weight="700">75</text>
+    <text x="52" y="23" font-family="'Inter', sans-serif" font-size="13" fill="#e2e8f0" font-weight="600">Health Score</text>
+    <text x="52" y="38" font-family="'Inter', sans-serif" font-size="10" fill="#64748b">0-100 with severity</text>
+
+    <!-- Normalization -->
+    <rect x="200" y="0" width="180" height="52" rx="10" fill="rgba(124,106,247,0.08)" stroke="#252533" stroke-width="1"/>
+    <text x="228" y="23" font-family="'Inter', sans-serif" font-size="13" fill="#e2e8f0" font-weight="600">Normalization</text>
+    <text x="228" y="38" font-family="'Inter', sans-serif" font-size="10" fill="#64748b">1NF / 2NF / 3NF check</text>
+
+    <!-- Index Recs -->
+    <rect x="400" y="0" width="180" height="52" rx="10" fill="rgba(124,106,247,0.08)" stroke="#252533" stroke-width="1"/>
+    <text x="428" y="23" font-family="'Inter', sans-serif" font-size="13" fill="#e2e8f0" font-weight="600">Index Recommendations</text>
+    <text x="428" y="38" font-family="'Inter', sans-serif" font-size="10" fill="#64748b">Composite &amp; unique indexes</text>
+
+    <!-- Relationship Analysis -->
+    <rect x="600" y="0" width="180" height="52" rx="10" fill="rgba(124,106,247,0.08)" stroke="#252533" stroke-width="1"/>
+    <text x="628" y="23" font-family="'Inter', sans-serif" font-size="13" fill="#e2e8f0" font-weight="600">Relationships</text>
+    <text x="628" y="38" font-family="'Inter', sans-serif" font-size="10" fill="#64748b">FK, circular deps, ON DELETE</text>
+  </g>
+
+  <!-- Row 2 -->
+  <g transform="translate(320, 395)">
+    <!-- Domain Detection -->
+    <rect x="0" y="0" width="180" height="52" rx="10" fill="rgba(124,106,247,0.08)" stroke="#252533" stroke-width="1"/>
+    <text x="28" y="23" font-family="'Inter', sans-serif" font-size="13" fill="#e2e8f0" font-weight="600">Domain Detection</text>
+    <text x="28" y="38" font-family="'Inter', sans-serif" font-size="10" fill="#64748b">Financial, e-commerce, health</text>
+
+    <!-- ER Diagram -->
+    <rect x="200" y="0" width="180" height="52" rx="10" fill="rgba(16,185,129,0.08)" stroke="#252533" stroke-width="1"/>
+    <text x="228" y="23" font-family="'Inter', sans-serif" font-size="13" fill="#e2e8f0" font-weight="600">ER Diagram</text>
+    <text x="228" y="38" font-family="'Inter', sans-serif" font-size="10" fill="#64748b">Interactive &amp; exportable PNG</text>
+
+    <!-- AI Enhancement -->
+    <rect x="400" y="0" width="180" height="52" rx="10" fill="rgba(124,106,247,0.08)" stroke="#252533" stroke-width="1"/>
+    <text x="428" y="23" font-family="'Inter', sans-serif" font-size="13" fill="#e2e8f0" font-weight="600">AI Enhancement</text>
+    <text x="428" y="38" font-family="'Inter', sans-serif" font-size="10" fill="#64748b">OpenAI, Gemini, Groq</text>
+
+    <!-- SQL Fix Scripts -->
+    <rect x="600" y="0" width="180" height="52" rx="10" fill="rgba(16,185,129,0.08)" stroke="#252533" stroke-width="1"/>
+    <text x="628" y="23" font-family="'Inter', sans-serif" font-size="13" fill="#e2e8f0" font-weight="600">SQL Fix Scripts</text>
+    <text x="628" y="38" font-family="'Inter', sans-serif" font-size="10" fill="#64748b">One-click ALTER TABLE output</text>
+  </g>
+
+  <!-- ── Left bottom: Code snippet with issue highlight ── -->
+  <g transform="translate(40, 460)" opacity="0.7">
+    <rect width="380" height="145" rx="10" fill="#111118" stroke="#252533" stroke-width="1"/>
+    <!-- Title bar dots -->
+    <circle cx="20" cy="16" r="5" fill="#f43f5e" opacity="0.8"/>
+    <circle cx="36" cy="16" r="5" fill="#f59e0b" opacity="0.8"/>
+    <circle cx="52" cy="16" r="5" fill="#10b981" opacity="0.8"/>
+    <text x="190" y="20" text-anchor="middle" font-family="'Inter', sans-serif" font-size="10" fill="#64748b">schema.sql</text>
+
+    <text x="16" y="48" font-family="'Cascadia Code', 'Fira Code', 'Consolas', monospace" font-size="12" fill="#7c6af7">CREATE TABLE</text>
+    <text x="16" y="66" font-family="'Cascadia Code', 'Fira Code', monospace" font-size="12" fill="#e2e8f0">  users (</text>
+    <text x="16" y="84" font-family="'Cascadia Code', 'Fira Code', monospace" font-size="12" fill="#a78bfa">    id</text>
+    <text x="52" y="84" font-family="'Cascadia Code', 'Fira Code', monospace" font-size="12" fill="#e2e8f0"> SERIAL </text>
+    <text x="118" y="84" font-family="'Cascadia Code', 'Fira Code', monospace" font-size="12" fill="#10b981">PRIMARY KEY</text>
+    <text x="16" y="102" font-family="'Cascadia Code', 'Fira Code', monospace" font-size="12" fill="#a78bfa">    email</text>
+    <text x="72" y="102" font-family="'Cascadia Code', 'Fira Code', monospace" font-size="12" fill="#e2e8f0"> VARCHAR(255)</text>
+    <text x="16" y="120" font-family="'Cascadia Code', 'Fira Code', monospace" font-size="12" fill="#e2e8f0">);</text>
     <!-- Highlight issue -->
-    <rect x="76" y="82" width="140" height="14" rx="2" fill="rgba(251,191,36,0.2)"/>
-    <text x="226" y="93" font-family="'Cascadia Code', 'Fira Code', monospace" font-size="10" fill="#fbbf24">← missing NOT NULL</text>
+    <rect x="68" y="95" width="130" height="13" rx="3" fill="rgba(245,158,11,0.15)"/>
+    <text x="208" y="105" font-family="'Cascadia Code', 'Fira Code', monospace" font-size="9" fill="#f59e0b">← missing NOT NULL</text>
   </g>
 
-  <!-- Score badge (bottom right) -->
-  <g transform="translate(880, 430)" opacity="0.8">
-    <rect width="300" height="140" rx="8" fill="rgba(0,0,0,0.4)" stroke="rgba(102,126,234,0.3)" stroke-width="1"/>
-    <text x="150" y="30" text-anchor="middle" font-family="'Segoe UI', system-ui, sans-serif" font-size="14" fill="#94a3b8" font-weight="500">HEALTH SCORE</text>
+  <!-- ── Right bottom: Score + stats panel ── -->
+  <g transform="translate(860, 460)" opacity="0.85">
+    <rect width="380" height="145" rx="10" fill="#111118" stroke="#252533" stroke-width="1"/>
+    <!-- Title -->
+    <text x="190" y="24" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" fill="#64748b" font-weight="500" letter-spacing="1">ANALYSIS RESULT</text>
+
     <!-- Score circle -->
-    <circle cx="100" cy="90" r="40" fill="none" stroke="rgba(102,126,234,0.2)" stroke-width="6"/>
-    <circle cx="100" cy="90" r="40" fill="none" stroke="#667eea" stroke-width="6" stroke-dasharray="188 64" stroke-linecap="round" transform="rotate(-90 100 90)"/>
-    <text x="100" y="97" text-anchor="middle" font-family="'Segoe UI', system-ui, sans-serif" font-size="28" fill="white" font-weight="700">75</text>
-    <!-- Stats -->
-    <text x="200" y="65" font-family="'Segoe UI', system-ui, sans-serif" font-size="12" fill="#94a3b8">Issues Found</text>
-    <text x="200" y="82" font-family="'Segoe UI', system-ui, sans-serif" font-size="18" fill="#f87171" font-weight="600">12</text>
-    <text x="200" y="105" font-family="'Segoe UI', system-ui, sans-serif" font-size="12" fill="#94a3b8">Suggestions</text>
-    <text x="200" y="122" font-family="'Segoe UI', system-ui, sans-serif" font-size="18" fill="#4ade80" font-weight="600">8</text>
+    <circle cx="80" cy="88" r="44" fill="none" stroke="rgba(124,106,247,0.15)" stroke-width="7"/>
+    <circle cx="80" cy="88" r="44" fill="none" stroke="#7c6af7" stroke-width="7" stroke-dasharray="200 76" stroke-linecap="round" transform="rotate(-90 80 88)"/>
+    <text x="80" y="68" text-anchor="middle" font-family="'Inter', sans-serif" font-size="11" fill="#94a3b8">Health</text>
+    <text x="80" y="100" text-anchor="middle" font-family="'Inter', sans-serif" font-size="32" fill="#f1f5f9" font-weight="700">75</text>
+    <text x="80" y="118" text-anchor="middle" font-family="'Inter', sans-serif" font-size="10" fill="#64748b">/ 100</text>
+
+    <!-- Stats columns -->
+    <text x="210" y="56" text-anchor="middle" font-family="'Inter', sans-serif" font-size="11" fill="#64748b">Issues Found</text>
+    <text x="210" y="80" text-anchor="middle" font-family="'Inter', sans-serif" font-size="22" fill="#f43f5e" font-weight="700">12</text>
+    <text x="210" y="100" text-anchor="middle" font-family="'Inter', sans-serif" font-size="11" fill="#64748b">Suggestions</text>
+    <text x="210" y="124" text-anchor="middle" font-family="'Inter', sans-serif" font-size="22" fill="#10b981" font-weight="700">8</text>
+    <text x="320" y="56" text-anchor="middle" font-family="'Inter', sans-serif" font-size="11" fill="#64748b">Tables</text>
+    <text x="320" y="80" text-anchor="middle" font-family="'Inter', sans-serif" font-size="22" fill="#7c6af7" font-weight="700">14</text>
+    <text x="320" y="100" text-anchor="middle" font-family="'Inter', sans-serif" font-size="11" fill="#64748b">Indexes</text>
+    <text x="320" y="124" text-anchor="middle" font-family="'Inter', sans-serif" font-size="22" fill="#06b6d4" font-weight="700">6</text>
   </g>
 
-  <!-- Bottom bar -->
-  <rect x="0" y="620" width="1280" height="20" fill="url(#accent)" opacity="0.6"/>
+  <!-- ── Bottom accent bar ── -->
+  <rect x="0" y="628" width="1280" height="12" fill="url(#accent)" opacity="0.5"/>
 </svg>
