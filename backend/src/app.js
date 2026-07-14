@@ -44,10 +44,23 @@ app.use(requestId);
 // ── Request logging ──
 app.use(requestLogger);
 
+// ── Allowed origins (shared by origin check + CORS) ──
+const allowedOrigins = (process.env.FRONTEND_URL || '')
+  .split(',')
+  .map(s => s.trim().replace(/\/+$/, ''))
+  .filter(Boolean);
+
 // ── Origin check (API-only, skips /health) ──
 app.use('/api/', (req, res, next) => {
-  if (!req.headers.origin && req.path !== '/health' && !req.path.includes('/health')) {
+  if (req.path === '/health' || req.path.includes('/health')) return next();
+
+  const origin = req.headers.origin;
+  if (!origin) {
     return sendError(res, 403, 'FORBIDDEN', 'Direct API access is not allowed. Use the web interface.');
+  }
+  const normalized = origin.replace(/\/+$/, '');
+  if (!allowedOrigins.includes(normalized)) {
+    return sendError(res, 403, 'FORBIDDEN', 'Origin not allowed');
   }
   next();
 });
@@ -72,10 +85,6 @@ const generalLimiter = rateLimit({
 app.use('/', generalLimiter);
 
 // ── CORS ──
-const allowedOrigins = (process.env.FRONTEND_URL || '')
-  .split(',')
-  .map(s => s.trim().replace(/\/+$/, ''))
-  .filter(Boolean);
 app.use(cors({
   origin: (origin, cb) => {
     if (!origin || allowedOrigins.includes(origin.replace(/\/+$/, ''))) {
