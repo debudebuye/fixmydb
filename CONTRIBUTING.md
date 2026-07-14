@@ -11,7 +11,7 @@ Be respectful, constructive, and inclusive. We're all here to make database sche
 1. Fork the repository
 2. Clone your fork:
    ```bash
-   git clone https://github.com/your-username/fixmydb.git
+   git clone https://github.com/debudebuye/fixmydb.git
    cd fixmydb
    ```
 3. Install dependencies:
