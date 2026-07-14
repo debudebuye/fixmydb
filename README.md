@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/banner.svg" alt="FixMyDB - AI Database Schema Reviewer" width="100%" />
+</p>
+
 # FixMyDB V1 — Open Source AI Database Schema Reviewer
 
 **FixMyDB** helps developers review, optimize, normalize, and improve database schemas in seconds. Built as an AI-powered Database Architect and Schema Reviewer, it saves developers time by automatically analyzing database schemas and providing actionable recommendations.
