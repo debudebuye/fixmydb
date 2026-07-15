@@ -12,28 +12,28 @@
 
 ### Schema Input
 - **Paste SQL** directly into the editor
-- **Upload multiple files** (.sql, .txt, .json) — drag & drop or file picker
-- **Load example schemas** — e-commerce, blog, social network demos
+- **Upload multiple files** (.sql, .txt, .json) - drag & drop or file picker
+- **Load example schemas** - e-commerce, blog, social network demos
 - **Clipboard paste** with one click
 
 ### Analysis Engine (Six Modules)
-1. **Health Score** — 0–100 score with color-coded severity gauge
-2. **Normalization Review** — 1NF, 2NF, 3NF compliance with suggestions
-3. **Index Recommendations** — composite indexes, unique constraints, covering indexes
-4. **Relationship Analysis** — missing foreign keys, circular dependencies, ON DELETE behavior
-5. **Domain Detection** — auto-detects financial, e-commerce, social, healthcare schemas with confidence score
-6. **Schema Patterns** — identifies event outbox, audit log, polymorphic references, financial ledger patterns
+1. **Health Score** - 0–100 score with color-coded severity gauge
+2. **Normalization Review** - 1NF, 2NF, 3NF compliance with suggestions
+3. **Index Recommendations** - composite indexes, unique constraints, covering indexes
+4. **Relationship Analysis** - missing foreign keys, circular dependencies, ON DELETE behavior
+5. **Domain Detection** - auto-detects financial, e-commerce, social, healthcare schemas with confidence score
+6. **Schema Patterns** - identifies event outbox, audit log, polymorphic references, financial ledger patterns
 
 ### AI Enhancement (Bring Your Own Key)
 - Supports **OpenAI**, **Groq**, **OpenRouter**, **Google Gemini**
-- User-provided API keys — never stored on server, session-only
+- User-provided API keys - never stored on server, session-only
 - AI adds architecture recommendations, scalability notes, best practices
-- Graceful fallback when AI is unavailable — core analysis still works
+- Graceful fallback when AI is unavailable - core analysis still works
 
 ### Output
-- **ER Diagram** — interactive React Flow visualization, export as PNG
-- **Optimized SQL** — PostgreSQL and MySQL dialects, copy-to-clipboard
-- **V1 disclaimer** — clear warning that output is optimized for structure, not runtime concerns
+- **ER Diagram** - interactive React Flow visualization, export as PNG
+- **Optimized SQL** - PostgreSQL and MySQL dialects, copy-to-clipboard
+- **V1 disclaimer** - clear warning that output is optimized for structure, not runtime concerns
 
 ### Desktop App
 - Electron-based desktop application
@@ -43,12 +43,12 @@
 - **macOS:** If Gatekeeper blocks the app, right-click the app → **Open**, or go to System Preferences → Privacy & Security → **"Open Anyway"**.
 
 ### Production Features
-- **API versioning** — `/api/v1/*` with backward-compatible redirects
-- **Structured logging** — JSON logs with request IDs
-- **Rate limiting** — 30 req/min on API, 60 req/min on root
-- **Input validation** — Zod schemas on all endpoints
-- **CORS + Helmet** — security headers, origin checking
-- **Health check** — `/health` endpoint with uptime
+- **API versioning** - `/api/v1/*` with backward-compatible redirects
+- **Structured logging** - JSON logs with request IDs
+- **Rate limiting** - 30 req/min on API, 60 req/min on root
+- **Input validation** - Zod schemas on all endpoints
+- **CORS + Helmet** - security headers, origin checking
+- **Health check** - `/health` endpoint with uptime
 
 ## Tech Stack
 
@@ -101,18 +101,18 @@ Open http://localhost:5173
 |----------|----------|---------|-------------|
 | `PORT` | No | `5000` | Server port |
 | `NODE_ENV` | No | `development` | `production` enables strict error handling |
-| `FRONTEND_URL` | Yes | — | Comma-separated allowed origins (e.g. `http://localhost:5173`) |
-| `SUPABASE_URL` | No | — | Supabase project URL (production DB) |
-| `SUPABASE_SERVICE_KEY` | No | — | Supabase service role key |
-| `SUPABASE_ANON_KEY` | No | — | Supabase anon key |
-| `DATABASE_URL` | No | — | Direct PostgreSQL connection string |
+| `FRONTEND_URL` | Yes | - | Comma-separated allowed origins (e.g. `http://localhost:5173`) |
+| `SUPABASE_URL` | No | - | Supabase project URL (production DB) |
+| `SUPABASE_SERVICE_KEY` | No | - | Supabase service role key |
+| `SUPABASE_ANON_KEY` | No | - | Supabase anon key |
+| `DATABASE_URL` | No | - | Direct PostgreSQL connection string |
 
 **Frontend** (`frontend/.env`):
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `VITE_API_URL` | No | `http://localhost:5000` | Backend URL for dev proxy |
 | `FRONTEND_URL` | No | `http://localhost:5173` | Frontend origin (for CORS) |
-| `VITE_BINANCE_ID` | No | — | Binance Pay ID for donation footer |
+| `VITE_BINANCE_ID` | No | - | Binance Pay ID for donation footer |
 
 ### Docker
 
@@ -222,18 +222,18 @@ Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md)
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
+MIT License - see [LICENSE](LICENSE) for details.
 
 ## Support
 
 - GitHub Issues: [Report bugs or request features](https://github.com/debudebuye/fixmydb/issues)
 - Discussions: [Join the community](https://github.com/debudebuye/fixmydb/discussions)
-- Email: [support@fixmydb.dev](mailto:support@fixmydb.dev) — help & support
-- Email: [hello@fixmydb.dev](mailto:hello@fixmydb.dev) — general inquiries
+- Email: [support@fixmydb.dev](mailto:support@fixmydb.dev) - help & support
+- Email: [hello@fixmydb.dev](mailto:hello@fixmydb.dev) - general inquiries
 
 ## Acknowledgments
 
-Inspired by ESLint for code and Postman for APIs — but for database architecture.
+Inspired by ESLint for code and Postman for APIs - but for database architecture.
 
 ---
 
