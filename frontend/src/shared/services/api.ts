@@ -81,7 +81,9 @@ export interface AIConfigPayload {
 
 export const analyzeSchema = async (sql: string, dialect: string = 'postgresql', deviceId?: string, aiConfig?: AIConfigPayload): Promise<AnalysisResult> => {
   const response = await withRetry(() =>
-    api.post<AnalysisResult>('/analyze', { sql, dialect, deviceId, aiConfig })
+    api.post<AnalysisResult>('/analyze', { sql, dialect, deviceId, aiConfig }, {
+      headers: aiConfig?.apiKey ? { 'X-AI-API-Key': aiConfig.apiKey } : undefined,
+    })
   );
   return response.data;
 };

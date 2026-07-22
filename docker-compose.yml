@@ -48,8 +48,9 @@ services:
     build: ./frontend
     ports:
       - "80:80"
-      # Uncomment for HTTPS with certificates
-      # - "443:443"
+      - "443:443"
+    volumes:
+      - ./nginx/ssl:/etc/nginx/ssl:ro
     depends_on:
       backend:
         condition: service_healthy

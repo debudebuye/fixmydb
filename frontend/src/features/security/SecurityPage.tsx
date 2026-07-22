@@ -14,14 +14,14 @@ const steps = [
   },
   {
     icon: <Send size={18} color="#f59e0b" />,
-    title: 'Sent with your schema',
-    desc: 'When you click "Analyze Schema", your API key is included in the POST request body alongside your SQL. This is a one-time transmission.',
+    title: 'Sent as a header',
+    desc: 'When you click "Analyze Schema", your API key is sent via the X-AI-API-Key request header — not in the body. This keeps it out of proxy logs.',
     detail: 'The key is sent over HTTPS. No background requests, no polling, no telemetry.',
   },
   {
     icon: <Server size={18} color="#10b981" />,
     title: 'Server receives & forwards',
-    desc: 'The FixMyDB server extracts the key from the request body. It creates a temporary OpenAI client instance in memory — the key is never written to disk, never logged, and never stored in any database.',
+    desc: 'The FixMyDB server extracts the key from the X-AI-API-Key header. It creates a temporary OpenAI client instance in memory — the key is never written to disk, never logged, and never stored in any database.',
     detail: 'If no user key is provided, the server falls back to its own env key (if configured).',
   },
   {

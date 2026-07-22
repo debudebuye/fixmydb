@@ -36,6 +36,19 @@ if (isProduction) {
 // ── Security ──
 app.use(helmet(isProduction ? {
   hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
+      imgSrc: ["'self'", "data:", "blob:"],
+      fontSrc: ["'self'", "data:"],
+      connectSrc: ["'self'", "https://api.fixmydb.dev", "https://api.openai.com", "https://api.groq.com", "https://openrouter.ai", "https://generativelanguage.googleapis.com"],
+      workerSrc: ["'self'", "blob:", "https://cdn.jsdelivr.net"],
+      frameSrc: ["'self'"],
+      frameAncestors: ["'self'"],
+    },
+  },
 } : { contentSecurityPolicy: false }));
 
 // ── Request ID (every request gets a unique ID) ──

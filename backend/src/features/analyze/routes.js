@@ -9,12 +9,13 @@ const { generateOptimizedSQL } = require('./services/sqlGenerator');
 const { enhanceWithAI } = require('./services/openaiAnalyzer');
 const { trackAnalysis } = require('../../database');
 const { schemas, validate } = require('../../shared/middleware/validate');
+const { extractApiKeyFromHeader } = require('../../shared/middleware/extractApiKey');
 const { sendSuccess, sendError } = require('../../shared/middleware/response');
 const logger = require('../../shared/utils/logger');
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-router.post('/', validate(schemas.analyze), async (req, res) => {
+router.post('/', extractApiKeyFromHeader, validate(schemas.analyze), async (req, res) => {
   const { sql, dialect, analysisMode, deviceId, apiKey, aiConfig } = req.body;
 
   try {
